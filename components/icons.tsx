@@ -13,6 +13,35 @@ export function StarIcon({ size = 22, fill = "#D8A33B", className, style }: Icon
   );
 }
 
+// South Sudanese flag — used as the Kush logo mark. `size` is the height; width is 1.5x.
+export function FlagIcon({ size = 22 }: { size?: number }) {
+  const h = size;
+  const w = Math.round(size * 1.5);
+  return (
+    <svg
+      width={w}
+      height={h}
+      viewBox="0 0 30 20"
+      style={{ borderRadius: 3, overflow: "hidden", flex: "none" }}
+    >
+      {/* green base (bottom band) */}
+      <rect width="30" height="20" fill="#2E7D54" />
+      {/* black top band */}
+      <rect width="30" height="6.2" fill="#0E0E0E" />
+      {/* white fimbriation + red middle band + white fimbriation */}
+      <rect y="6.2" width="30" height="0.8" fill="#FFFFFF" />
+      <rect y="7" width="30" height="6" fill="#CE3B33" />
+      <rect y="13" width="30" height="0.8" fill="#FFFFFF" />
+      {/* blue hoist triangle */}
+      <polygon points="0,0 0,20 13,10" fill="#1E3A6B" />
+      {/* gold star */}
+      <g transform="translate(1,6.5) scale(0.3)">
+        <polygon points={STAR_POINTS} fill="#FADA17" />
+      </g>
+    </svg>
+  );
+}
+
 export function FilterIcon({ size = 20 }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#1B1714" strokeWidth={1.8} strokeLinecap="round">
