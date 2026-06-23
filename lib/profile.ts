@@ -7,6 +7,8 @@ export function isProfileComplete(p: Profile | null): boolean {
     !!p.name.trim() &&
     !!p.age &&
     !!p.gender &&
+    !!p.looking_for &&
+    !!p.country.trim() &&
     !!p.city.trim() &&
     !!p.bio.trim() &&
     p.photos.length > 0
@@ -20,11 +22,13 @@ export function homeTownFromRoute(route: string): string {
   return m ? m[1].trim() : "";
 }
 
-export function buildRoute(city: string, homeTown: string): string {
+export function buildRoute(city: string, country: string, homeTown: string): string {
   const c = city.trim();
+  const co = country.trim();
   const h = homeTown.trim();
+  const lives = co ? `Lives in ${c}, ${co}` : c ? `Lives in ${c}` : "";
   if (h && h.toLowerCase() !== c.toLowerCase()) {
-    return `Lives in ${c} · from ${h}`;
+    return lives ? `${lives} · from ${h}` : `From ${h}`;
   }
-  return c ? `Lives in ${c}` : "";
+  return lives;
 }

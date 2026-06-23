@@ -14,7 +14,7 @@ function toProfile(row: ProfileRow): Profile {
 }
 
 const PROFILE_COLS =
-  "id, name, age, city, route, bio, tags, photos, gender, location_focus, tint, created_at";
+  "id, name, age, city, country, route, bio, tags, photos, gender, looking_for, tribe, location_focus, tint, created_at";
 
 /** Candidate profiles for the discover deck: not me, and not already swiped by me. */
 export async function getCandidates(

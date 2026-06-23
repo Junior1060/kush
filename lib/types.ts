@@ -10,11 +10,14 @@ export interface Profile {
   name: string;
   age: number;
   city: string;
+  country: string;
   route: string;
   bio: string;
   tags: string[];
   photos: string[]; // storage paths in the `photos` bucket; empty => gradient placeholder
   gender: Gender | null;
+  looking_for: ShowMe | null; // who they want to see
+  tribe: string;
   location_focus: LocationFocus | null;
   tint: string; // CSS gradient placeholder color, e.g. "linear-gradient(150deg,#E0A24F,#A85A22)"
   initial: string; // first letter, used in avatars

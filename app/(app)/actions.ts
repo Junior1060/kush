@@ -3,15 +3,18 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import type { Gender, LocationFocus, SwipeDirection } from "@/lib/types";
+import type { Gender, LocationFocus, ShowMe, SwipeDirection } from "@/lib/types";
 import { buildRoute } from "@/lib/profile";
 
 export interface ProfileInput {
   name: string;
   age: number;
   gender: Gender;
+  lookingFor: ShowMe;
+  country: string;
   city: string;
   homeTown: string;
+  tribe: string;
   bio: string;
   tags: string[];
   location_focus: LocationFocus;
@@ -31,7 +34,10 @@ export async function updateProfile(
   if (!input.name.trim()) return { ok: false, error: "Name is required." };
   if (!input.age || input.age < 18 || input.age > 100)
     return { ok: false, error: "Enter a valid age (18+)." };
-  if (!input.city.trim()) return { ok: false, error: "City is required." };
+  if (!input.gender) return { ok: false, error: "Select who you are." };
+  if (!input.lookingFor) return { ok: false, error: "Select who you're looking for." };
+  if (!input.country.trim()) return { ok: false, error: "Select your country." };
+  if (!input.city.trim()) return { ok: false, error: "Select your city." };
   if (!input.bio.trim()) return { ok: false, error: "Add a short bio." };
   if (input.photos.length === 0)
     return { ok: false, error: "Add at least one photo." };
@@ -42,8 +48,11 @@ export async function updateProfile(
       name: input.name.trim(),
       age: input.age,
       gender: input.gender,
+      looking_for: input.lookingFor,
+      country: input.country.trim(),
       city: input.city.trim(),
-      route: buildRoute(input.city, input.homeTown),
+      tribe: input.tribe,
+      route: buildRoute(input.city, input.country, input.homeTown),
       bio: input.bio.trim(),
       tags: input.tags.filter(Boolean).slice(0, 6),
       location_focus: input.location_focus,

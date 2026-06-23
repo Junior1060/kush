@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { Profile } from "@/lib/types";
+import type { Profile, ShowMe } from "@/lib/types";
 import { DEFAULT_FILTERS, type Filters } from "@/lib/types";
 import { loadFilters, saveFilters } from "@/lib/preferences";
 import { Wordmark } from "@/components/Wordmark";
@@ -15,14 +15,21 @@ const GENDER_FOR: Record<Filters["showMe"], string | null> = {
   Everyone: null,
 };
 
-export function DiscoverScreen({ candidates }: { candidates: Profile[] }) {
+export function DiscoverScreen({
+  candidates,
+  lookingFor,
+}: {
+  candidates: Profile[];
+  lookingFor: ShowMe | null;
+}) {
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
-  // Hydrate from saved discovery preferences (set here or on the Preferences screen).
+  // Hydrate from saved preferences, defaulting "Show me" to who the user said
+  // they're looking for during onboarding (the key first-user bug fix).
   useEffect(() => {
-    setFilters(loadFilters());
-  }, []);
+    setFilters(loadFilters(lookingFor ? { showMe: lookingFor } : undefined));
+  }, [lookingFor]);
 
   // Persist whenever filters change so the two screens stay in sync.
   useEffect(() => {

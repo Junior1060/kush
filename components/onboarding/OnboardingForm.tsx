@@ -3,16 +3,23 @@
 /* eslint-disable @next/next/no-img-element */
 import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { Gender, LocationFocus } from "@/lib/types";
+import type { Gender, LocationFocus, ShowMe } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
 import { updateProfile } from "@/app/(app)/actions";
+import { loadFilters, saveFilters } from "@/lib/preferences";
+import { COUNTRIES, OTHER, citiesForCountry } from "@/lib/places";
+import { TRIBES } from "@/lib/tribes";
+import { Select } from "@/components/Select";
 
 export interface OnboardingInitial {
   name: string;
   age: string;
   gender: Gender | "";
+  lookingFor: ShowMe | "";
+  country: string;
   city: string;
   homeTown: string;
+  tribe: string;
   bio: string;
   tags: string;
   location_focus: LocationFocus;
@@ -74,20 +81,47 @@ export function OnboardingForm({
   const [name, setName] = useState(initial.name);
   const [age, setAge] = useState(initial.age);
   const [gender, setGender] = useState<Gender | "">(initial.gender);
-  const [city, setCity] = useState(initial.city);
-  const [homeTown, setHomeTown] = useState(initial.homeTown);
+  const [lookingFor, setLookingFor] = useState<ShowMe | "">(initial.lookingFor);
+  const [country, setCountry] = useState(initial.country);
+  const [tribe, setTribe] = useState(initial.tribe);
   const [bio, setBio] = useState(initial.bio);
   const [tags, setTags] = useState(initial.tags);
+  const [homeTown, setHomeTown] = useState(initial.homeTown);
   const [locationFocus, setLocationFocus] = useState<LocationFocus>(
     initial.location_focus
   );
+
+  // City: chosen from the country's list, or typed when "Other…" is picked.
+  const initialCityKnown =
+    !!initial.city && citiesForCountry(initial.country).includes(initial.city);
+  const [city, setCity] = useState(initial.city);
+  const [cityOther, setCityOther] = useState(!!initial.city && !initialCityKnown);
 
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const cities = citiesForCountry(country);
+  const citySelectValue = cityOther ? OTHER : cities.includes(city) ? city : "";
+
   function publicUrl(path: string) {
     return supabase.storage.from("photos").getPublicUrl(path).data.publicUrl;
+  }
+
+  function onCountryChange(v: string) {
+    setCountry(v);
+    setCity("");
+    setCityOther(false);
+  }
+
+  function onCitySelect(v: string) {
+    if (v === OTHER) {
+      setCityOther(true);
+      setCity("");
+    } else {
+      setCityOther(false);
+      setCity(v);
+    }
   }
 
   async function onFiles(files: FileList | null) {
@@ -119,17 +153,21 @@ export function OnboardingForm({
 
   async function save() {
     setError(null);
-    if (!gender) {
-      setError("Select who you are.");
-      return;
-    }
+    if (!gender) return setError("Select who you are.");
+    if (!lookingFor) return setError("Select who you're looking for.");
+    if (!country) return setError("Select your country.");
+    if (!city.trim()) return setError("Select or enter your city.");
+
     setSaving(true);
     const res = await updateProfile({
       name,
       age: Number(age),
       gender,
+      lookingFor,
+      country,
       city,
       homeTown,
+      tribe,
       bio,
       tags: tags
         .split(",")
@@ -144,6 +182,10 @@ export function OnboardingForm({
       setError(res.error ?? "Something went wrong.");
       return;
     }
+
+    // Seed the discovery filter so the deck immediately shows who they want.
+    saveFilters({ ...loadFilters(), showMe: lookingFor });
+
     router.replace(edit ? "/profile" : "/discover");
     router.refresh();
   }
@@ -234,17 +276,60 @@ export function OnboardingForm({
         />
       </div>
 
+      {/* Looking for */}
+      <div className={SECTION}>Looking for</div>
+      <div className="mb-5">
+        <Segmented<ShowMe>
+          options={["Men", "Women", "Everyone"]}
+          value={lookingFor}
+          onChange={setLookingFor}
+        />
+      </div>
+
+      {/* Country */}
+      <div className={SECTION}>Country you live in</div>
+      <div className="mb-5">
+        <Select
+          value={country}
+          onChange={onCountryChange}
+          options={COUNTRIES}
+          placeholder="Select your country"
+        />
+      </div>
+
       {/* City */}
-      <div className={SECTION}>Current city</div>
-      <input
-        value={city}
-        onChange={(e) => setCity(e.target.value)}
-        placeholder="Melbourne"
-        className={`${INPUT} mb-5`}
-      />
+      <div className={SECTION}>City</div>
+      <div className="mb-5">
+        <Select
+          value={citySelectValue}
+          onChange={onCitySelect}
+          options={cities}
+          placeholder={country ? "Select your city" : "Pick a country first"}
+          disabled={!country}
+        />
+        {cityOther && (
+          <input
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            placeholder="Type your city"
+            className={`${INPUT} mt-2`}
+          />
+        )}
+      </div>
+
+      {/* Tribe */}
+      <div className={SECTION}>Tribe</div>
+      <div className="mb-5">
+        <Select
+          value={tribe}
+          onChange={setTribe}
+          options={TRIBES}
+          placeholder="Select your tribe"
+        />
+      </div>
 
       {/* Home town */}
-      <div className={SECTION}>Where you&rsquo;re from</div>
+      <div className={SECTION}>Where you&rsquo;re from (optional)</div>
       <input
         value={homeTown}
         onChange={(e) => setHomeTown(e.target.value)}
