@@ -77,7 +77,7 @@ export function WelcomeAuth() {
 
   async function verify() {
     setError(null);
-    if (code.trim().length < 6) return setError("Enter the 6-digit code.");
+    if (code.trim().length < 6) return setError("Enter the code from your email.");
 
     setBusy(true);
     const supabase = createClient();
@@ -116,17 +116,17 @@ export function WelcomeAuth() {
       <div className="pt-5 text-center">
         <div className="mb-2 text-[30px]">✉️</div>
         <p className="m-0 mb-4 text-[14.5px] leading-[1.5] text-[#6F665C]">
-          We sent a 6-digit code to{" "}
+          We sent a verification code to{" "}
           <span className="font-semibold text-ink">{email}</span>. Enter it below.
         </p>
         <input
           value={code}
-          onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, "").slice(0, 6))}
+          onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, "").slice(0, 8))}
           onKeyDown={(e) => e.key === "Enter" && verify()}
           inputMode="numeric"
           autoComplete="one-time-code"
-          placeholder="123456"
-          className={`${INPUT} text-center text-[22px] font-bold tracking-[8px]`}
+          placeholder="Enter code"
+          className={`${INPUT} text-center text-[22px] font-bold tracking-[6px]`}
         />
         {error && (
           <p className="m-0 mt-3 text-[13px] font-semibold text-red">{error}</p>
