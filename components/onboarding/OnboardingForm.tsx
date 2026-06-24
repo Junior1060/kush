@@ -191,7 +191,7 @@ export function OnboardingForm({
   }
 
   return (
-    <div className="kush-scroll h-full w-full overflow-y-auto px-[22px] pb-[30px] pt-2">
+    <div className="kush-scroll mx-auto h-full w-full max-w-[560px] overflow-y-auto px-[22px] pb-[30px] pt-2">
       <h1 className="m-0 mt-1 font-display text-[26px] font-bold tracking-[-0.5px] text-ink">
         {edit ? "Edit your profile" : "Set up your profile"}
       </h1>

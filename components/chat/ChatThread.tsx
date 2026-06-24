@@ -69,7 +69,7 @@ export function ChatThread({
   return (
     <div className="flex h-full w-full flex-col">
       {/* Header */}
-      <div className="flex flex-none items-center gap-3 border-b border-[rgba(27,23,20,0.07)] px-[18px] pb-3 pt-[2px]">
+      <div className="mx-auto flex w-full max-w-[760px] flex-none items-center gap-3 border-b border-[rgba(27,23,20,0.07)] px-[18px] pb-3 pt-[2px]">
         <Link
           href="/messages"
           aria-label="Back"
@@ -95,7 +95,7 @@ export function ChatThread({
       {/* Thread */}
       <div
         ref={scrollRef}
-        className="kush-scroll flex flex-1 flex-col gap-[9px] overflow-y-auto px-[18px] pb-2 pt-[18px]"
+        className="kush-scroll mx-auto flex w-full max-w-[760px] flex-1 flex-col gap-[9px] overflow-y-auto px-[18px] pb-2 pt-[18px]"
       >
         <div className="mb-[6px] text-center text-[11.5px] text-faint">
           You matched on Kush · Today
@@ -125,7 +125,7 @@ export function ChatThread({
       </div>
 
       {/* Composer */}
-      <div className="flex flex-none items-center gap-[10px] px-4 pb-4 pt-[10px]">
+      <div className="mx-auto flex w-full max-w-[760px] flex-none items-center gap-[10px] px-4 pb-4 pt-[10px]">
         <input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}

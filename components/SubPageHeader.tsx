@@ -10,7 +10,7 @@ export function SubPageHeader({
   back?: string;
 }) {
   return (
-    <div className="flex flex-none items-center gap-2 px-[18px] pb-3 pt-1">
+    <div className="mx-auto flex w-full max-w-[600px] flex-none items-center gap-2 px-[18px] pb-3 pt-1">
       <Link
         href={back}
         aria-label="Back"

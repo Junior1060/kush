@@ -15,7 +15,7 @@ export default async function MatchesPage() {
   const newMatches = conversations.filter((c) => !c.lastMessage).slice(0, 8);
 
   return (
-    <div className="kush-scroll h-full w-full overflow-y-auto px-[22px] pb-[24px] pt-1">
+    <div className="kush-scroll mx-auto h-full w-full max-w-[860px] overflow-y-auto px-[22px] pb-[24px] pt-1">
       <h1 className="m-0 mb-1 mt-[6px] font-display text-[26px] font-bold tracking-[-0.5px] text-ink">
         Matches
       </h1>
@@ -63,7 +63,7 @@ export default async function MatchesPage() {
           <div className="mb-3 text-[12px] font-bold uppercase tracking-[0.6px] text-faint">
             All matches
           </div>
-          <div className="grid grid-cols-2 gap-[14px]">
+          <div className="grid grid-cols-2 gap-[14px] sm:grid-cols-3 lg:grid-cols-4">
             {conversations.map((c) => {
               const photo = firstPhotoUrl(supabase, c.profile.photos);
               return (

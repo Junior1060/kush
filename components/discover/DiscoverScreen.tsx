@@ -56,7 +56,7 @@ export function DiscoverScreen({
 
   return (
     <div className="flex h-full w-full flex-col">
-      <div className="flex flex-none items-center justify-between px-[24px] pb-3 pt-1">
+      <div className="mx-auto flex w-full max-w-[496px] flex-none items-center justify-between px-[24px] pb-3 pt-1">
         <Wordmark size={23} star={18} gap={7} />
         <button
           onClick={() => setFiltersOpen(true)}

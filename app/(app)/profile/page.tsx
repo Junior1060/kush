@@ -56,7 +56,7 @@ export default async function ProfilePage() {
   const route = profile?.route || "Add your home & city";
 
   return (
-    <div className="kush-scroll h-full w-full overflow-y-auto px-[22px] pb-[24px] pt-1">
+    <div className="kush-scroll mx-auto h-full w-full max-w-[600px] overflow-y-auto px-[22px] pb-[24px] pt-1">
       <div className="my-[4px] mb-[18px] flex items-center justify-between">
         <h1 className="m-0 font-display text-[26px] font-bold tracking-[-0.5px] text-ink">
           Profile

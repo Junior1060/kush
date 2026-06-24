@@ -70,7 +70,7 @@ export default function PrivacyPage() {
   return (
     <div className="flex h-full w-full flex-col">
       <SubPageHeader title="Privacy & safety" />
-      <div className="kush-scroll flex-1 overflow-y-auto px-[22px] pb-[24px]">
+      <div className="kush-scroll mx-auto w-full max-w-[600px] flex-1 overflow-y-auto px-[22px] pb-[24px]">
         <p className="m-0 mb-5 text-[14px] text-muted">
           Control what others can see. Changes save automatically.
         </p>

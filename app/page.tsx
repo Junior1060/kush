@@ -6,7 +6,7 @@ import { WelcomeAuth } from "@/components/welcome/WelcomeAuth";
 export default function WelcomePage() {
   return (
     <PhoneFrame>
-      <div className="kush-scroll flex h-full w-full flex-col overflow-y-auto px-[26px] pb-[30px] pt-2">
+      <div className="kush-scroll mx-auto flex h-full w-full max-w-[460px] flex-col overflow-y-auto px-[26px] pb-[30px] pt-2">
         <div className="flex items-center justify-center pb-[18px] pt-[6px]">
           <Wordmark />
         </div>

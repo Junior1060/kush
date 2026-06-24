@@ -21,7 +21,7 @@ export default async function MessagesPage() {
   });
 
   return (
-    <div className="kush-scroll h-full w-full overflow-y-auto pb-[24px] pt-1">
+    <div className="kush-scroll mx-auto h-full w-full max-w-[680px] overflow-y-auto pb-[24px] pt-1">
       <h1 className="mx-[22px] mb-4 mt-[6px] font-display text-[26px] font-bold tracking-[-0.5px] text-ink">
         Messages
       </h1>

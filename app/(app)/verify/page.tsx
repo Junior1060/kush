@@ -10,7 +10,7 @@ export default function VerifyPage() {
   return (
     <div className="flex h-full w-full flex-col">
       <SubPageHeader title="Verify your account" />
-      <div className="kush-scroll flex-1 overflow-y-auto px-[22px] pb-[24px]">
+      <div className="kush-scroll mx-auto w-full max-w-[600px] flex-1 overflow-y-auto px-[22px] pb-[24px]">
         <div className="mb-5 flex flex-col items-center rounded-card bg-surface px-5 py-8 text-center shadow-card">
           <div className="flex h-[64px] w-[64px] items-center justify-center rounded-full bg-[#F8E0DE]">
             <StarIcon size={30} />
