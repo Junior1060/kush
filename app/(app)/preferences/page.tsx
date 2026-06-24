@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { Filters, LocationFocus, ShowMe } from "@/lib/types";
 import { DEFAULT_FILTERS } from "@/lib/types";
 import { loadFilters, saveFilters } from "@/lib/preferences";
+import { updateLookingFor } from "@/app/(app)/actions";
 import { SubPageHeader } from "@/components/SubPageHeader";
 
 const SECTION = "mb-[10px] text-[12.5px] font-bold uppercase tracking-[0.4px] text-muted";
@@ -56,6 +57,7 @@ export default function PreferencesPage() {
 
   function save() {
     saveFilters(filters);
+    void updateLookingFor(filters.showMe); // persist gender preference to profile
     setSaved(true);
     setTimeout(() => setSaved(false), 1800);
   }

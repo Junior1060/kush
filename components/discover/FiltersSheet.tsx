@@ -69,10 +69,12 @@ const SECTION_LABEL =
 export function FiltersSheet({
   filters,
   setFilters,
+  onShowMeChange,
   onClose,
 }: {
   filters: Filters;
   setFilters: (updater: (f: Filters) => Filters) => void;
+  onShowMeChange: (v: ShowMe) => void;
   onClose: () => void;
 }) {
   const { showMe, ageMin, ageMax, distance, locationFocus } = filters;
@@ -104,7 +106,7 @@ export function FiltersSheet({
           <Segmented<ShowMe>
             options={["Women", "Men", "Everyone"]}
             value={showMe}
-            onChange={(v) => setFilters((f) => ({ ...f, showMe: v }))}
+            onChange={onShowMeChange}
           />
         </div>
 

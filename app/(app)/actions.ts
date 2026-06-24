@@ -102,6 +102,18 @@ export async function recordSwipe(
   return { matched: Boolean(match) };
 }
 
+// Persist the "Show me" gender preference to the profile (drives server matching).
+export async function updateLookingFor(value: ShowMe): Promise<void> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+
+  await supabase.from("profiles").update({ looking_for: value }).eq("id", user.id);
+  revalidatePath("/discover");
+}
+
 export async function sendMessage(matchId: string, body: string): Promise<void> {
   const trimmed = body.trim();
   if (!trimmed) return;

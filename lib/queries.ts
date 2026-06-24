@@ -16,11 +16,32 @@ function toProfile(row: ProfileRow): Profile {
 const PROFILE_COLS =
   "id, name, age, city, country, route, bio, tags, photos, gender, looking_for, tribe, location_focus, tint, created_at";
 
-/** Candidate profiles for the discover deck: not me, and not already swiped by me. */
+// Which gender does this "looking for" want to see?
+const GENDER_WANTED: Record<string, string | null> = {
+  Women: "Woman",
+  Men: "Man",
+  Everyone: null,
+};
+
+// Which "looking_for" values would want to see this gender? (the reverse match)
+function lookingForValuesThatWant(gender: string | null): string[] {
+  if (gender === "Woman") return ["Women", "Everyone"];
+  if (gender === "Man") return ["Men", "Everyone"];
+  return ["Everyone"]; // nonbinary/other: shown to people open to everyone
+}
+
+/**
+ * Candidate profiles for the discover deck: not me, not already swiped, and
+ * gender-matched BOTH ways — I only see who I'm looking for, and I'm only shown
+ * to people whose preference includes my gender. Enforced server-side.
+ */
 export async function getCandidates(
   supabase: SupabaseClient,
   userId: string
 ): Promise<Profile[]> {
+  const viewer = await getOwnProfile(supabase, userId);
+  if (!viewer) return [];
+
   const { data: swiped } = await supabase
     .from("swipes")
     .select("target_id")
@@ -28,11 +49,18 @@ export async function getCandidates(
 
   const excluded = [userId, ...(swiped ?? []).map((s) => s.target_id)];
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("profiles")
     .select(PROFILE_COLS)
     .not("id", "in", `(${excluded.join(",")})`)
-    .order("created_at", { ascending: true });
+    // they must want to see my gender
+    .in("looking_for", lookingForValuesThatWant(viewer.gender));
+
+  // I only see the gender I'm looking for (Everyone => no restriction)
+  const wanted = viewer.looking_for ? GENDER_WANTED[viewer.looking_for] : null;
+  if (wanted) query = query.eq("gender", wanted);
+
+  const { data, error } = await query.order("created_at", { ascending: false });
 
   if (error) throw error;
   return (data ?? []).map(toProfile);

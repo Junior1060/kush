@@ -1,19 +1,15 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import type { Profile, ShowMe } from "@/lib/types";
 import { DEFAULT_FILTERS, type Filters } from "@/lib/types";
 import { loadFilters, saveFilters } from "@/lib/preferences";
+import { updateLookingFor } from "@/app/(app)/actions";
 import { Wordmark } from "@/components/Wordmark";
 import { FilterIcon } from "@/components/icons";
 import { SwipeDeck } from "./SwipeDeck";
 import { FiltersSheet } from "./FiltersSheet";
-
-const GENDER_FOR: Record<Filters["showMe"], string | null> = {
-  Women: "Woman",
-  Men: "Man",
-  Everyone: null,
-};
 
 export function DiscoverScreen({
   candidates,
@@ -22,38 +18,41 @@ export function DiscoverScreen({
   candidates: Profile[];
   lookingFor: ShowMe | null;
 }) {
-  const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+  const router = useRouter();
+  const [filters, setFilters] = useState<Filters>({
+    ...DEFAULT_FILTERS,
+    showMe: lookingFor ?? DEFAULT_FILTERS.showMe,
+  });
   const [filtersOpen, setFiltersOpen] = useState(false);
 
-  // Hydrate from saved preferences, defaulting "Show me" to who the user said
-  // they're looking for during onboarding (the key first-user bug fix).
+  // Hydrate age/distance/location from saved prefs; gender ("showMe") comes from
+  // the profile (server-authoritative) so the deck and DB never disagree.
   useEffect(() => {
-    setFilters(loadFilters(lookingFor ? { showMe: lookingFor } : undefined));
+    const saved = loadFilters();
+    setFilters({ ...saved, showMe: lookingFor ?? saved.showMe });
   }, [lookingFor]);
 
-  // Persist whenever filters change so the two screens stay in sync.
   useEffect(() => {
     saveFilters(filters);
   }, [filters]);
 
-  // Distance is UI-only (no geo data); gender/age/location_focus constrain the deck.
+  // Gender is filtered on the server; here we only narrow by age + location.
   const filtered = useMemo(() => {
-    const wantGender = GENDER_FOR[filters.showMe];
     return candidates.filter((p) => {
-      if (wantGender && p.gender !== wantGender) return false;
       if (p.age < filters.ageMin || p.age > filters.ageMax) return false;
       if (filters.locationFocus !== "Both" && p.location_focus !== filters.locationFocus)
         return false;
       return true;
     });
-  }, [candidates, filters]);
+  }, [candidates, filters.ageMin, filters.ageMax, filters.locationFocus]);
 
-  // Reset the deck position whenever the filtered set changes.
-  const deckKey = useMemo(
-    () =>
-      `${filters.showMe}-${filters.ageMin}-${filters.ageMax}-${filters.locationFocus}`,
-    [filters]
-  );
+  const deckKey = `${filters.ageMin}-${filters.ageMax}-${filters.locationFocus}`;
+
+  // Changing "Show me" persists to the profile and refetches matching candidates.
+  function handleShowMe(next: ShowMe) {
+    setFilters((f) => ({ ...f, showMe: next }));
+    void updateLookingFor(next).then(() => router.refresh());
+  }
 
   return (
     <div className="flex h-full w-full flex-col">
@@ -74,6 +73,7 @@ export function DiscoverScreen({
         <FiltersSheet
           filters={filters}
           setFilters={(updater) => setFilters(updater)}
+          onShowMeChange={handleShowMe}
           onClose={() => setFiltersOpen(false)}
         />
       )}

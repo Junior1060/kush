@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { firstPhotoUrl } from "@/lib/photos";
 import { recordSwipe } from "@/app/(app)/actions";
 import { Card } from "./Card";
+import { ProfileDetail } from "./ProfileDetail";
 import { CloseIcon, HeartIcon, StarIcon } from "@/components/icons";
 
 const THRESHOLD = 110;
@@ -31,13 +32,17 @@ export function SwipeDeck({ profiles }: { profiles: Profile[] }) {
   const [dragging, setDragging] = useState(false);
   const [flyOut, setFlyOut] = useState<FlyOut>(null);
   const [matchToast, setMatchToast] = useState<string | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
   const startX = useRef(0);
+  const moved = useRef(false);
 
   const deckEmpty = index >= profiles.length;
+  const topProfile = profiles[index];
 
   function act(type: SwipeDirection) {
     if (flyOut) return;
     const target = profiles[index];
+    setDetailOpen(false);
     setFlyOut(type);
 
     // Persist the swipe; a mutual like/star surfaces a match toast.
@@ -57,6 +62,7 @@ export function SwipeDeck({ profiles }: { profiles: Profile[] }) {
 
   function onDown(e: React.PointerEvent) {
     startX.current = e.clientX;
+    moved.current = false;
     setDragging(true);
     try {
       e.currentTarget.setPointerCapture(e.pointerId);
@@ -66,13 +72,19 @@ export function SwipeDeck({ profiles }: { profiles: Profile[] }) {
   }
   function onMove(e: React.PointerEvent) {
     if (!dragging) return;
-    setDragX(e.clientX - startX.current);
+    const dx = e.clientX - startX.current;
+    if (Math.abs(dx) > 6) moved.current = true;
+    setDragX(dx);
   }
   function onUp() {
     setDragging(false);
     if (dragX > THRESHOLD) act("like");
     else if (dragX < -THRESHOLD) act("pass");
-    else setDragX(0);
+    else {
+      setDragX(0);
+      // A tap (no real drag) opens the full profile.
+      if (!moved.current && !flyOut) setDetailOpen(true);
+    }
   }
 
   const slice = profiles.slice(index, index + 3);
@@ -172,6 +184,14 @@ export function SwipeDeck({ profiles }: { profiles: Profile[] }) {
             <HeartIcon size={26} />
           </button>
         </div>
+      )}
+
+      {detailOpen && topProfile && (
+        <ProfileDetail
+          profile={topProfile}
+          onAct={(type) => act(type)}
+          onClose={() => setDetailOpen(false)}
+        />
       )}
     </div>
   );
