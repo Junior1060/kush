@@ -1,6 +1,7 @@
-import { StarIcon } from "./icons";
+import { FlagIcon } from "./icons";
 
-// The Kush wordmark: solid black star + word (monochrome brand mark).
+// The Kush wordmark: South Sudanese flag + word. The flag is the one intentional
+// spot of color in the otherwise monochrome editorial UI.
 export function Wordmark({
   size = 27,
   star = 22,
@@ -12,7 +13,7 @@ export function Wordmark({
 }) {
   return (
     <div className="flex items-center" style={{ gap }}>
-      <StarIcon size={star} fill="#0A0A0A" />
+      <FlagIcon size={star} />
       <span
         className="font-display font-extrabold text-ink"
         style={{ fontSize: size, letterSpacing: "-0.5px" }}
