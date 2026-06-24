@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { PhoneFrame } from "@/components/PhoneFrame";
 import { Wordmark } from "@/components/Wordmark";
 import { WelcomeAuth } from "@/components/welcome/WelcomeAuth";
@@ -12,12 +13,13 @@ export default function WelcomePage() {
         </div>
 
         {/* Hero */}
-        <div className="relative min-h-[230px] flex-1 overflow-hidden rounded-sheet border-[1.5px] border-ink bg-[linear-gradient(160deg,#3A3A3A,#0A0A0A)]">
-          <div className="absolute inset-0 bg-[repeating-linear-gradient(125deg,rgba(255,255,255,0.06)_0_2px,transparent_2px_13px)]" />
-          <div className="absolute left-4 top-4 rounded-[20px] bg-[rgba(0,0,0,0.35)] px-[9px] py-1 font-mono text-[10px] tracking-[0.5px] text-[rgba(255,255,255,0.7)]">
-            photo · couple
-          </div>
-          <div className="absolute inset-x-0 bottom-0 h-[60%] bg-[linear-gradient(to_top,rgba(0,0,0,0.85),transparent)]" />
+        <div className="relative min-h-[230px] flex-1 overflow-hidden rounded-sheet border-[1.5px] border-ink bg-ink">
+          <img
+            src="/hero-couple.jpg"
+            alt="A South Sudanese couple in traditional dress"
+            className="absolute inset-0 h-full w-full object-cover object-[center_25%]"
+          />
+          <div className="absolute inset-x-0 bottom-0 h-[60%] bg-[linear-gradient(to_top,rgba(0,0,0,0.9),transparent)]" />
           <div className="absolute inset-x-[26px] bottom-[30px]">
             <div className="mb-[14px] inline-flex gap-1">
               <div className="h-[5px] w-[26px] rounded-[3px] bg-white" />
