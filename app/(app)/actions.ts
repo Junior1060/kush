@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Gender, LocationFocus, ShowMe, SwipeDirection } from "@/lib/types";
 import { buildRoute } from "@/lib/profile";
+import { touchLastActive } from "@/lib/queries";
 
 export interface ProfileInput {
   name: string;
@@ -88,6 +89,8 @@ export async function recordSwipe(
       { onConflict: "swiper_id,target_id" }
     );
 
+  await touchLastActive(supabase, user.id);
+
   // The match trigger fires on insert; check if a match row now exists for this pair.
   const [a, b] = [user.id, targetId].sort();
   const { data: match } = await supabase
@@ -127,6 +130,8 @@ export async function sendMessage(matchId: string, body: string): Promise<void> 
   await supabase
     .from("messages")
     .insert({ match_id: matchId, sender_id: user.id, body: trimmed });
+
+  await touchLastActive(supabase, user.id);
 
   revalidatePath(`/chat/${matchId}`);
   revalidatePath("/messages");

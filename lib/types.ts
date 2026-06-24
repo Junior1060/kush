@@ -22,6 +22,7 @@ export interface Profile {
   tint: string; // CSS gradient placeholder color, e.g. "linear-gradient(150deg,#E0A24F,#A85A22)"
   initial: string; // first letter, used in avatars
   created_at: string;
+  last_active_at: string;
 }
 
 export interface Match {

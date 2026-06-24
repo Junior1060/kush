@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Conversation, Message, Profile } from "./types";
+import { completenessScore } from "./profile";
 
 // Row shape as stored in Postgres (no derived fields).
 type ProfileRow = Omit<Profile, "initial"> & { initial?: string };
@@ -14,7 +15,27 @@ function toProfile(row: ProfileRow): Profile {
 }
 
 const PROFILE_COLS =
-  "id, name, age, city, country, route, bio, tags, photos, gender, looking_for, tribe, location_focus, tint, created_at";
+  "id, name, age, city, country, route, bio, tags, photos, gender, looking_for, tribe, location_focus, tint, created_at, last_active_at";
+
+// Bumps the user's recent-activity timestamp (used for discover ranking).
+export async function touchLastActive(
+  supabase: SupabaseClient,
+  userId: string
+): Promise<void> {
+  await supabase
+    .from("profiles")
+    .update({ last_active_at: new Date().toISOString() })
+    .eq("id", userId);
+}
+
+// Recency boost: very recently active profiles rank higher.
+function activityBoost(iso: string, nowMs: number): number {
+  const days = (nowMs - new Date(iso).getTime()) / 86_400_000;
+  if (days <= 1) return 8;
+  if (days <= 7) return 4;
+  if (days <= 30) return 1;
+  return 0;
+}
 
 // Which gender does this "looking for" want to see?
 const GENDER_WANTED: Record<string, string | null> = {
@@ -60,10 +81,26 @@ export async function getCandidates(
   const wanted = viewer.looking_for ? GENDER_WANTED[viewer.looking_for] : null;
   if (wanted) query = query.eq("gender", wanted);
 
-  const { data, error } = await query.order("created_at", { ascending: false });
+  const { data, error } = await query.order("last_active_at", { ascending: false });
 
   if (error) throw error;
-  return (data ?? []).map(toProfile);
+
+  // Rank by completeness + recent activity so the deck stays lively. Ties break
+  // on most-recently-active.
+  const now = Date.now();
+  return (data ?? [])
+    .map(toProfile)
+    .map((p) => ({
+      p,
+      score: completenessScore(p) + activityBoost(p.last_active_at, now),
+    }))
+    .sort(
+      (a, b) =>
+        b.score - a.score ||
+        new Date(b.p.last_active_at).getTime() -
+          new Date(a.p.last_active_at).getTime()
+    )
+    .map((x) => x.p);
 }
 
 export async function getOwnProfile(

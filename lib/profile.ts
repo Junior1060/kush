@@ -22,6 +22,16 @@ export function homeTownFromRoute(route: string): string {
   return m ? m[1].trim() : "";
 }
 
+// How filled-out a profile is (0–12). Drives discover ranking — more complete = higher.
+export function completenessScore(p: Profile): number {
+  let s = 0;
+  s += Math.min(p.photos.length, 3) * 2; // up to 6 for photos
+  s += p.bio.trim().length >= 40 ? 2 : p.bio.trim().length > 0 ? 1 : 0;
+  s += Math.min(p.tags.length, 3); // up to 3 for interests
+  if (p.tribe && p.tribe !== "Prefer not to say") s += 1;
+  return s;
+}
+
 export function buildRoute(city: string, country: string, homeTown: string): string {
   const c = city.trim();
   const co = country.trim();

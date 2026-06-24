@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { getCandidates, getOwnProfile } from "@/lib/queries";
+import { getCandidates, getOwnProfile, touchLastActive } from "@/lib/queries";
 import { DiscoverScreen } from "@/components/discover/DiscoverScreen";
 
 export default async function DiscoverPage() {
@@ -7,6 +7,8 @@ export default async function DiscoverPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  if (user) await touchLastActive(supabase, user.id);
 
   const candidates = user ? await getCandidates(supabase, user.id) : [];
   const profile = user ? await getOwnProfile(supabase, user.id) : null;
