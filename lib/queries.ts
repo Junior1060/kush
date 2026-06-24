@@ -37,58 +37,18 @@ function activityBoost(iso: string, nowMs: number): number {
   return 0;
 }
 
-// Which gender does this "looking for" want to see?
-const GENDER_WANTED: Record<string, string | null> = {
-  Women: "Woman",
-  Men: "Man",
-  Everyone: null,
-};
-
-// Which "looking_for" values would want to see this gender? (the reverse match)
-function lookingForValuesThatWant(gender: string | null): string[] {
-  if (gender === "Woman") return ["Women", "Everyone"];
-  if (gender === "Man") return ["Men", "Everyone"];
-  return ["Everyone"]; // nonbinary/other: shown to people open to everyone
-}
-
 /**
- * Candidate profiles for the discover deck: not me, not already swiped, and
- * gender-matched BOTH ways — I only see who I'm looking for, and I'm only shown
- * to people whose preference includes my gender. Enforced server-side.
+ * Candidate profiles for the discover deck. Filtering (not me, not already swiped,
+ * bidirectional gender match) happens in the `discover_candidates` SQL function via
+ * an anti-join, so it scales regardless of how much the user has swiped. The cheap
+ * completeness + activity ranking is applied here on the already-filtered set.
  */
-export async function getCandidates(
-  supabase: SupabaseClient,
-  userId: string
-): Promise<Profile[]> {
-  const viewer = await getOwnProfile(supabase, userId);
-  if (!viewer) return [];
-
-  const { data: swiped } = await supabase
-    .from("swipes")
-    .select("target_id")
-    .eq("swiper_id", userId);
-
-  const excluded = [userId, ...(swiped ?? []).map((s) => s.target_id)];
-
-  let query = supabase
-    .from("profiles")
-    .select(PROFILE_COLS)
-    .not("id", "in", `(${excluded.join(",")})`)
-    // they must want to see my gender
-    .in("looking_for", lookingForValuesThatWant(viewer.gender));
-
-  // I only see the gender I'm looking for (Everyone => no restriction)
-  const wanted = viewer.looking_for ? GENDER_WANTED[viewer.looking_for] : null;
-  if (wanted) query = query.eq("gender", wanted);
-
-  const { data, error } = await query.order("last_active_at", { ascending: false });
-
+export async function getCandidates(supabase: SupabaseClient): Promise<Profile[]> {
+  const { data, error } = await supabase.rpc("discover_candidates");
   if (error) throw error;
 
-  // Rank by completeness + recent activity so the deck stays lively. Ties break
-  // on most-recently-active.
   const now = Date.now();
-  return (data ?? [])
+  return ((data ?? []) as ProfileRow[])
     .map(toProfile)
     .map((p) => ({
       p,

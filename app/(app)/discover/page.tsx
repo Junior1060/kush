@@ -10,7 +10,7 @@ export default async function DiscoverPage() {
 
   if (user) await touchLastActive(supabase, user.id);
 
-  const candidates = user ? await getCandidates(supabase, user.id) : [];
+  const candidates = user ? await getCandidates(supabase) : [];
   const profile = user ? await getOwnProfile(supabase, user.id) : null;
 
   return (

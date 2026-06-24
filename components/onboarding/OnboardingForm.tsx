@@ -7,6 +7,7 @@ import type { Gender, LocationFocus, ShowMe } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
 import { updateProfile } from "@/app/(app)/actions";
 import { loadFilters, saveFilters } from "@/lib/preferences";
+import { compressImage } from "@/lib/image";
 import { COUNTRIES, OTHER, citiesForCountry } from "@/lib/places";
 import { TRIBES } from "@/lib/tribes";
 import { Select } from "@/components/Select";
@@ -129,11 +130,11 @@ export function OnboardingForm({
     setError(null);
     try {
       for (const file of Array.from(files).slice(0, 6 - photos.length)) {
-        const ext = file.name.split(".").pop() || "jpg";
-        const path = `${userId}/${crypto.randomUUID()}.${ext}`;
+        const blob = await compressImage(file); // resize + JPEG before upload
+        const path = `${userId}/${crypto.randomUUID()}.jpg`;
         const { error } = await supabase.storage
           .from("photos")
-          .upload(path, file, { upsert: true, contentType: file.type });
+          .upload(path, blob, { upsert: true, contentType: "image/jpeg" });
         if (error) {
           setError(`Upload failed: ${error.message}`);
         } else {
