@@ -5,7 +5,7 @@ type IconProps = { size?: number; className?: string; style?: React.CSSPropertie
 const STAR_POINTS =
   "12 2.5 14.7 9 21.6 9.5 16.3 14 18 20.8 12 17 6 20.8 7.7 14 2.4 9.5 9.3 9";
 
-export function StarIcon({ size = 22, fill = "#D8A33B", className, style }: IconProps & { fill?: string }) {
+export function StarIcon({ size = 22, fill = "#0A0A0A", className, style }: IconProps & { fill?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" className={className} style={style}>
       <polygon points={STAR_POINTS} fill={fill} />
@@ -44,18 +44,18 @@ export function FlagIcon({ size = 22 }: { size?: number }) {
 
 export function FilterIcon({ size = 20 }: IconProps) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#1B1714" strokeWidth={1.8} strokeLinecap="round">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" strokeWidth={1.8} strokeLinecap="round">
       <line x1="4" y1="7" x2="20" y2="7" />
       <line x1="4" y1="12" x2="20" y2="12" />
       <line x1="4" y1="17" x2="20" y2="17" />
-      <circle cx="9" cy="7" r="2.4" fill="#F7F2EA" />
-      <circle cx="15" cy="12" r="2.4" fill="#F7F2EA" />
-      <circle cx="8" cy="17" r="2.4" fill="#F7F2EA" />
+      <circle cx="9" cy="7" r="2.4" fill="#FFFFFF" />
+      <circle cx="15" cy="12" r="2.4" fill="#FFFFFF" />
+      <circle cx="8" cy="17" r="2.4" fill="#FFFFFF" />
     </svg>
   );
 }
 
-export function PinIcon({ size = 13, stroke = "#FBF5EC" }: IconProps & { stroke?: string }) {
+export function PinIcon({ size = 13, stroke = "#0A0A0A" }: IconProps & { stroke?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth={2}>
       <path d="M12 21c4-4 7-7.4 7-11a7 7 0 1 0-14 0c0 3.6 3 7 7 11z" />
@@ -64,9 +64,9 @@ export function PinIcon({ size = 13, stroke = "#FBF5EC" }: IconProps & { stroke?
   );
 }
 
-export function CloseIcon({ size = 24 }: IconProps) {
+export function CloseIcon({ size = 24, stroke = "#0A0A0A" }: IconProps & { stroke?: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#CE3B33" strokeWidth={2.4} strokeLinecap="round">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth={2.4} strokeLinecap="round">
       <line x1="6" y1="6" x2="18" y2="18" />
       <line x1="18" y1="6" x2="6" y2="18" />
     </svg>
@@ -86,7 +86,7 @@ export function HeartIcon({ size = 26 }: IconProps) {
 
 export function BackIcon({ size = 22 }: IconProps) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#1B1714" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
       <polyline points="15 5 8 12 15 19" />
     </svg>
   );
@@ -94,7 +94,7 @@ export function BackIcon({ size = 22 }: IconProps) {
 
 export function SendIcon({ size = 20 }: IconProps) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#F7F2EA" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
       <line x1="12" y1="19" x2="12" y2="6" />
       <polyline points="6 12 12 5 18 12" />
     </svg>
@@ -103,14 +103,14 @@ export function SendIcon({ size = 20 }: IconProps) {
 
 export function GearIcon({ size = 19 }: IconProps) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#1B1714" strokeWidth={1.8}>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" strokeWidth={1.8}>
       <circle cx="12" cy="12" r="3" />
       <path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 6.6 19l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0-1.1-2.7H2a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 3.7 7.7L3.6 7.6a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H8.4a1.6 1.6 0 0 0 1-1.5V2a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V8.4a1.6 1.6 0 0 0 1.5 1H22a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1.6z" />
     </svg>
   );
 }
 
-export function ChevronIcon({ size = 18, stroke = "#C4BBB0" }: IconProps & { stroke?: string }) {
+export function ChevronIcon({ size = 18, stroke = "#9B9B9B" }: IconProps & { stroke?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
       <polyline points="9 6 15 12 9 18" />

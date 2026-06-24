@@ -28,7 +28,7 @@ export interface OnboardingInitial {
 
 const SECTION = "mb-2 text-[12.5px] font-bold uppercase tracking-[0.4px] text-muted";
 const INPUT =
-  "h-[48px] w-full rounded-input border border-[rgba(27,23,20,0.12)] bg-surface px-[16px] text-[15px] text-ink outline-none placeholder:text-faint focus:border-[rgba(27,23,20,0.3)]";
+  "h-[48px] w-full rounded-input border-[1.5px] border-ink bg-white px-[16px] text-[15px] text-ink outline-none placeholder:text-faint";
 
 function Segmented<T extends string>({
   options,
@@ -40,7 +40,7 @@ function Segmented<T extends string>({
   onChange: (v: T) => void;
 }) {
   return (
-    <div className="flex gap-2 rounded-[15px] bg-[#EBE3D6] p-1">
+    <div className="flex gap-1 rounded-[15px] border-[1.5px] border-ink bg-white p-1">
       {options.map((opt) => {
         const active = value === opt;
         return (
@@ -48,11 +48,10 @@ function Segmented<T extends string>({
             key={opt}
             type="button"
             onClick={() => onChange(opt)}
-            className="h-[40px] flex-1 rounded-[12px] border-none text-[14px] font-bold transition-all duration-150"
+            className="h-[40px] flex-1 rounded-[11px] border-none text-[14px] font-bold transition-colors duration-150"
             style={{
-              background: active ? "#1B1714" : "transparent",
-              color: active ? "#F7F2EA" : "#6F665C",
-              boxShadow: active ? "0 4px 10px -4px rgba(27,23,20,0.4)" : "none",
+              background: active ? "#0A0A0A" : "transparent",
+              color: active ? "#FFFFFF" : "#6B6B6B",
               cursor: "pointer",
             }}
           >
@@ -207,12 +206,12 @@ export function OnboardingForm({
         {photos.map((path) => (
           <div
             key={path}
-            className="relative aspect-[3/4] overflow-hidden rounded-[14px] bg-[#EBE3D6]"
+            className="relative aspect-[3/4] overflow-hidden rounded-[14px] border-[1.5px] border-ink bg-[#F2F2F2]"
           >
             <img
               src={publicUrl(path)}
               alt=""
-              className="absolute inset-0 h-full w-full object-cover"
+              className="kush-photo absolute inset-0 h-full w-full object-cover"
             />
             <button
               type="button"
@@ -229,7 +228,7 @@ export function OnboardingForm({
             type="button"
             onClick={() => fileInput.current?.click()}
             disabled={uploading}
-            className="flex aspect-[3/4] flex-col items-center justify-center gap-1 rounded-[14px] border border-dashed border-[rgba(27,23,20,0.25)] bg-surface text-muted disabled:opacity-60"
+            className="flex aspect-[3/4] flex-col items-center justify-center gap-1 rounded-[14px] border-[1.5px] border-dashed border-ink bg-white text-muted disabled:opacity-60"
           >
             <span className="text-[26px] leading-none">＋</span>
             <span className="text-[12px] font-semibold">
@@ -344,7 +343,7 @@ export function OnboardingForm({
         onChange={(e) => setBio(e.target.value)}
         placeholder="Tell people a little about you…"
         rows={3}
-        className="mb-5 w-full resize-none rounded-input border border-[rgba(27,23,20,0.12)] bg-surface px-[16px] py-3 text-[15px] leading-[1.45] text-ink outline-none placeholder:text-faint focus:border-[rgba(27,23,20,0.3)]"
+        className="mb-5 w-full resize-none rounded-input border-[1.5px] border-ink bg-white px-[16px] py-3 text-[15px] leading-[1.45] text-ink outline-none placeholder:text-faint"
       />
 
       {/* Tags */}

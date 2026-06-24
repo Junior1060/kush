@@ -109,12 +109,12 @@ export function ChatThread({
               style={{ justifyContent: mine ? "flex-end" : "flex-start" }}
             >
               <div
-                className="max-w-[74%] px-[15px] py-[11px] text-[14.5px] leading-[1.4] shadow-[0_4px_10px_-8px_rgba(27,23,20,0.4)]"
+                className="max-w-[74%] px-[15px] py-[11px] text-[14.5px] leading-[1.4]"
                 style={{
                   borderRadius: mine ? "20px 20px 5px 20px" : "20px 20px 20px 5px",
-                  background: mine ? "#1B1714" : "#FFFFFF",
-                  color: mine ? "#F7F2EA" : "#1B1714",
-                  border: mine ? "none" : "1px solid rgba(27,23,20,0.08)",
+                  background: mine ? "#0A0A0A" : "#FFFFFF",
+                  color: mine ? "#FFFFFF" : "#0A0A0A",
+                  border: "1.5px solid #0A0A0A",
                 }}
               >
                 {m.body}
@@ -131,13 +131,13 @@ export function ChatThread({
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && send()}
           placeholder={`Message ${profile.name}…`}
-          className="h-[46px] flex-1 rounded-pill border border-[rgba(27,23,20,0.12)] bg-surface px-[18px] text-[14.5px] text-ink outline-none placeholder:text-faint"
+          className="h-[46px] flex-1 rounded-pill border-[1.5px] border-ink bg-white px-[18px] text-[14.5px] text-ink outline-none placeholder:text-faint"
         />
         <button
           onClick={send}
           disabled={sending}
           aria-label="Send"
-          className="flex h-[46px] w-[46px] flex-none items-center justify-center rounded-full border-none bg-ink disabled:opacity-70"
+          className="flex h-[46px] w-[46px] flex-none items-center justify-center rounded-full border-[1.5px] border-ink bg-ink disabled:opacity-70"
         >
           <SendIcon size={20} />
         </button>

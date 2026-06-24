@@ -19,18 +19,17 @@ function Segmented<T extends string>({
   onChange: (v: T) => void;
 }) {
   return (
-    <div className="flex gap-2 rounded-[15px] bg-[#EBE3D6] p-1">
+    <div className="flex gap-1 rounded-[15px] border-[1.5px] border-ink bg-white p-1">
       {options.map((opt) => {
         const active = value === opt;
         return (
           <button
             key={opt}
             onClick={() => onChange(opt)}
-            className="h-[40px] flex-1 rounded-[12px] border-none text-[14px] font-bold transition-all duration-150"
+            className="h-[40px] flex-1 rounded-[11px] border-none text-[14px] font-bold transition-colors duration-150"
             style={{
-              background: active ? "#1B1714" : "transparent",
-              color: active ? "#F7F2EA" : "#6F665C",
-              boxShadow: active ? "0 4px 10px -4px rgba(27,23,20,0.4)" : "none",
+              background: active ? "#0A0A0A" : "transparent",
+              color: active ? "#FFFFFF" : "#6B6B6B",
               cursor: "pointer",
             }}
           >
@@ -88,10 +87,10 @@ export default function PreferencesPage() {
           </span>
         </div>
         <div className="mb-6 flex gap-3">
-          <div className="flex flex-1 items-center justify-between rounded-input border border-[rgba(27,23,20,0.1)] bg-surface px-[10px] py-2">
+          <div className="flex flex-1 items-center justify-between rounded-input border-[1.5px] border-ink bg-white px-[10px] py-2">
             <button
               onClick={() => update({ ageMin: Math.max(18, filters.ageMin - 1) })}
-              className="h-[30px] w-[30px] rounded-[9px] border-none bg-[#F1EADD] text-[18px] font-bold text-ink"
+              className="h-[30px] w-[30px] rounded-[9px] border-[1.5px] border-ink bg-white text-[18px] font-bold text-ink"
             >
               −
             </button>
@@ -100,24 +99,24 @@ export default function PreferencesPage() {
               onClick={() =>
                 update({ ageMin: Math.min(filters.ageMax - 1, filters.ageMin + 1) })
               }
-              className="h-[30px] w-[30px] rounded-[9px] border-none bg-[#F1EADD] text-[18px] font-bold text-ink"
+              className="h-[30px] w-[30px] rounded-[9px] border-[1.5px] border-ink bg-white text-[18px] font-bold text-ink"
             >
               +
             </button>
           </div>
-          <div className="flex flex-1 items-center justify-between rounded-input border border-[rgba(27,23,20,0.1)] bg-surface px-[10px] py-2">
+          <div className="flex flex-1 items-center justify-between rounded-input border-[1.5px] border-ink bg-white px-[10px] py-2">
             <button
               onClick={() =>
                 update({ ageMax: Math.max(filters.ageMin + 1, filters.ageMax - 1) })
               }
-              className="h-[30px] w-[30px] rounded-[9px] border-none bg-[#F1EADD] text-[18px] font-bold text-ink"
+              className="h-[30px] w-[30px] rounded-[9px] border-[1.5px] border-ink bg-white text-[18px] font-bold text-ink"
             >
               −
             </button>
             <span className="text-[15px] font-bold text-ink">{filters.ageMax}</span>
             <button
               onClick={() => update({ ageMax: Math.min(70, filters.ageMax + 1) })}
-              className="h-[30px] w-[30px] rounded-[9px] border-none bg-[#F1EADD] text-[18px] font-bold text-ink"
+              className="h-[30px] w-[30px] rounded-[9px] border-[1.5px] border-ink bg-white text-[18px] font-bold text-ink"
             >
               +
             </button>

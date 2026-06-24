@@ -14,8 +14,8 @@ body {
 
 body {
   font-family: var(--font-hanken), sans-serif;
-  background: #e7e2d9; /* desk surface behind the device frame on desktop */
-  color: #1b1714;
+  background: #ffffff;
+  color: #0a0a0a;
 }
 
 /* Hide scrollbars inside scroll regions (matches prototype .kush-scroll) */
@@ -35,7 +35,12 @@ body {
   overflow: hidden;
 }
 
-/* Gold accent for the distance range input */
+/* Range input accent — monochrome */
 input[type="range"].accent-gold {
-  accent-color: #d8a33b;
+  accent-color: #0a0a0a;
+}
+
+/* All displayed user photos render grayscale (editorial style) */
+.kush-photo {
+  filter: grayscale(1) contrast(1.02);
 }

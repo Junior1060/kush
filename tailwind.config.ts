@@ -9,17 +9,19 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        cream: "#F7F2EA",
+        // Strict monochrome editorial palette — no color.
+        cream: "#FFFFFF", // app background (kept token name for low churn)
         surface: "#FFFFFF",
-        ink: "#1B1714",
-        muted: "#8A8178",
-        faint: "#A89F94",
-        // South Sudan flag palette — also semantic roles in the UI
-        red: "#CE3B33", // like / alerts
-        green: "#2E7D54", // accent / online
-        gold: "#D8A33B", // signature star
-        "gold-active": "#C9962E", // active tab
-        blue: "#1E3A6B", // profile hero
+        ink: "#0A0A0A", // text / buttons / borders
+        muted: "#6B6B6B", // secondary text
+        faint: "#9B9B9B", // tertiary text
+        line: "#B0B0B0", // hairlines
+        // Former accent roles all collapse to ink (black) in monochrome.
+        red: "#0A0A0A",
+        green: "#0A0A0A",
+        gold: "#0A0A0A",
+        "gold-active": "#0A0A0A",
+        blue: "#0A0A0A",
       },
       fontFamily: {
         display: ["var(--font-bricolage)", "sans-serif"],
@@ -33,17 +35,18 @@ const config: Config = {
         input: "14px",
         pill: "23px",
       },
+      // No decorative shadows — definition comes from 1.5px black outlines.
       boxShadow: {
-        card: "0 20px 44px -16px rgba(27,23,20,0.5)",
-        "btn-pass": "0 8px 18px -8px rgba(27,23,20,0.35)",
-        "btn-star": "0 10px 20px -8px rgba(216,163,59,0.7)",
-        "btn-like": "0 10px 22px -8px rgba(206,59,51,0.7)",
-        sheet: "0 -20px 50px -20px rgba(0,0,0,0.4)",
-        device: "0 50px 90px -30px rgba(27,23,20,0.55), 0 0 0 1px rgba(0,0,0,0.4)",
+        card: "none",
+        "btn-pass": "none",
+        "btn-star": "none",
+        "btn-like": "none",
+        sheet: "none",
+        device: "none",
       },
       borderColor: {
-        hairline: "rgba(27,23,20,0.07)",
-        "hairline-strong": "rgba(27,23,20,0.12)",
+        hairline: "rgba(10,10,10,0.12)",
+        "hairline-strong": "rgba(10,10,10,0.22)",
       },
     },
   },

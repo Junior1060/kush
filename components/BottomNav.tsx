@@ -9,8 +9,8 @@ import {
   ProfileNavIcon,
 } from "./icons";
 
-const ACTIVE = "#C9962E";
-const IDLE = "#B0A79C";
+const ACTIVE = "#0A0A0A";
+const IDLE = "#9B9B9B";
 
 const TABS = [
   { href: "/discover", label: "Discover", Icon: DiscoverNavIcon },
@@ -23,7 +23,7 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <div className="flex flex-none items-start border-t border-[rgba(27,23,20,0.07)] bg-[rgba(247,242,234,0.92)] px-4 pb-[max(env(safe-area-inset-bottom),11px)] pt-[11px] backdrop-blur-[12px]">
+    <div className="flex flex-none items-start border-t-[1.5px] border-ink bg-white px-4 pb-[max(env(safe-area-inset-bottom),11px)] pt-[11px]">
       {TABS.map(({ href, label, Icon }) => {
         const active = pathname === href || pathname.startsWith(href + "/");
         const color = active ? ACTIVE : IDLE;

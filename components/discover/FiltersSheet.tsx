@@ -12,18 +12,17 @@ function Segmented<T extends string>({
   onChange: (v: T) => void;
 }) {
   return (
-    <div className="flex gap-2 rounded-[15px] bg-[#EBE3D6] p-1">
+    <div className="flex gap-1 rounded-[15px] border-[1.5px] border-ink bg-white p-1">
       {options.map((opt) => {
         const active = value === opt;
         return (
           <button
             key={opt}
             onClick={() => onChange(opt)}
-            className="h-[40px] flex-1 rounded-[12px] border-none font-body text-[14px] font-bold transition-all duration-150"
+            className="h-[40px] flex-1 rounded-[11px] border-none font-body text-[14px] font-bold transition-colors duration-150"
             style={{
-              background: active ? "#1B1714" : "transparent",
-              color: active ? "#F7F2EA" : "#6F665C",
-              boxShadow: active ? "0 4px 10px -4px rgba(27,23,20,0.4)" : "none",
+              background: active ? "#0A0A0A" : "transparent",
+              color: active ? "#FFFFFF" : "#6B6B6B",
               cursor: "pointer",
             }}
           >
@@ -45,17 +44,17 @@ function Stepper({
   onUp: () => void;
 }) {
   return (
-    <div className="flex flex-1 items-center justify-between rounded-input border border-[rgba(27,23,20,0.1)] bg-surface px-[10px] py-2">
+    <div className="flex flex-1 items-center justify-between rounded-input border-[1.5px] border-ink bg-white px-[10px] py-2">
       <button
         onClick={onDown}
-        className="h-[30px] w-[30px] rounded-[9px] border-none bg-[#F1EADD] text-[18px] font-bold leading-none text-ink"
+        className="h-[30px] w-[30px] rounded-[9px] border-[1.5px] border-ink bg-white text-[18px] font-bold leading-none text-ink"
       >
         −
       </button>
       <span className="text-[15px] font-bold text-ink">{value}</span>
       <button
         onClick={onUp}
-        className="h-[30px] w-[30px] rounded-[9px] border-none bg-[#F1EADD] text-[18px] font-bold leading-none text-ink"
+        className="h-[30px] w-[30px] rounded-[9px] border-[1.5px] border-ink bg-white text-[18px] font-bold leading-none text-ink"
       >
         +
       </button>
@@ -85,17 +84,17 @@ export function FiltersSheet({
     <div className="absolute inset-0 z-[70] flex flex-col justify-end">
       <div
         onClick={onClose}
-        className="absolute inset-0 bg-[rgba(20,12,8,0.4)]"
+        className="absolute inset-0 bg-[rgba(0,0,0,0.45)]"
       />
-      <div className="relative rounded-[30px_30px_42px_42px] bg-cream px-[26px] pb-[30px] pt-[10px] shadow-sheet">
-        <div className="mx-auto mb-[18px] mt-[6px] h-[5px] w-[42px] rounded-[3px] bg-[#D8CFC1]" />
+      <div className="relative mx-auto w-full max-w-[496px] rounded-[30px_30px_0_0] border-[1.5px] border-ink bg-white px-[26px] pb-[30px] pt-[10px]">
+        <div className="mx-auto mb-[18px] mt-[6px] h-[5px] w-[42px] rounded-[3px] bg-ink" />
         <div className="mb-[22px] flex items-center justify-between">
           <h2 className="m-0 font-display text-[22px] font-bold tracking-[-0.4px] text-ink">
             Discovery
           </h2>
           <button
             onClick={onClose}
-            className="border-none bg-transparent text-[15px] font-bold text-red"
+            className="border-none bg-transparent text-[15px] font-bold text-ink"
           >
             Done
           </button>

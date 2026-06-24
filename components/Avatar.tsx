@@ -1,10 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
+import { PLACEHOLDER_BG } from "@/lib/style";
 
-// Circular avatar: shows the user's photo if available, else an initial on the
-// profile's gradient tint (faithful to the prototype placeholders).
+// Circular avatar: grayscale photo if available, else an initial on a dark-gray→black
+// gradient. Optional black ring (monochrome editorial style).
 export function Avatar({
   initial,
-  tint,
   photoUrl,
   size = 56,
   fontSize = 21,
@@ -12,7 +12,7 @@ export function Avatar({
   children,
 }: {
   initial: string;
-  tint: string;
+  tint?: string; // ignored in monochrome; kept for call-site compatibility
   photoUrl?: string | null;
   size?: number;
   fontSize?: number;
@@ -21,25 +21,22 @@ export function Avatar({
 }) {
   return (
     <div
-      className="relative flex flex-none items-center justify-center rounded-full"
+      className="relative flex flex-none items-center justify-center overflow-hidden rounded-full"
       style={{
         width: size,
         height: size,
-        background: tint,
-        boxShadow: ring ? "0 0 0 2px #F7F2EA, 0 0 0 4px #D8A33B" : undefined,
+        background: PLACEHOLDER_BG,
+        boxShadow: ring ? "0 0 0 1.5px #FFFFFF, 0 0 0 3px #0A0A0A" : undefined,
       }}
     >
       {photoUrl ? (
         <img
           src={photoUrl}
           alt={initial}
-          className="absolute inset-0 h-full w-full rounded-full object-cover"
+          className="kush-photo absolute inset-0 h-full w-full rounded-full object-cover"
         />
       ) : (
-        <span
-          className="font-display font-bold text-[#FBF5EC]"
-          style={{ fontSize }}
-        >
+        <span className="font-display font-bold text-white" style={{ fontSize }}>
           {initial}
         </span>
       )}

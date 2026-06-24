@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getConversations } from "@/lib/queries";
 import { firstPhotoUrl } from "@/lib/photos";
+import { PLACEHOLDER_BG } from "@/lib/style";
 import { Avatar } from "@/components/Avatar";
 
 export default async function MatchesPage() {
@@ -70,14 +71,14 @@ export default async function MatchesPage() {
                 <Link
                   key={c.matchId}
                   href={`/chat/${c.matchId}`}
-                  className="relative aspect-[3/4] overflow-hidden rounded-[20px] shadow-[0_12px_26px_-14px_rgba(27,23,20,0.4)]"
-                  style={{ background: photo ? "#000" : c.profile.tint }}
+                  className="relative aspect-[3/4] overflow-hidden rounded-[20px] border-[1.5px] border-ink"
+                  style={{ background: photo ? "#000" : PLACEHOLDER_BG }}
                 >
                   {photo ? (
                     <img
                       src={photo}
                       alt={c.profile.name}
-                      className="absolute inset-0 h-full w-full object-cover"
+                      className="kush-photo absolute inset-0 h-full w-full object-cover"
                     />
                   ) : (
                     <>
@@ -89,8 +90,8 @@ export default async function MatchesPage() {
                       </div>
                     </>
                   )}
-                  <div className="absolute inset-x-0 bottom-0 h-[55%] bg-[linear-gradient(to_top,rgba(28,12,6,0.8),transparent)]" />
-                  <div className="absolute bottom-[11px] left-[12px] text-left text-[#FBF5EC]">
+                  <div className="absolute inset-x-0 bottom-0 h-[55%] bg-[linear-gradient(to_top,rgba(0,0,0,0.85),transparent)]" />
+                  <div className="absolute bottom-[11px] left-[12px] text-left text-white">
                     <div className="font-display text-[16px] font-bold">
                       {c.profile.name}, {c.profile.age}
                     </div>

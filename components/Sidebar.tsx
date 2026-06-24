@@ -10,8 +10,8 @@ import {
   ProfileNavIcon,
 } from "./icons";
 
-const ACTIVE = "#C9962E";
-const IDLE = "#6F665C";
+const ACTIVE = "#0A0A0A";
+const IDLE = "#6B6B6B";
 
 const TABS = [
   { href: "/discover", label: "Discover", Icon: DiscoverNavIcon },
@@ -25,7 +25,7 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden h-full w-[248px] flex-none flex-col border-r border-[rgba(27,23,20,0.08)] bg-[rgba(247,242,234,0.7)] px-4 py-7 lg:flex">
+    <aside className="hidden h-full w-[248px] flex-none flex-col border-r-[1.5px] border-ink bg-white px-4 py-7 lg:flex">
       <div className="px-3 pb-9">
         <Wordmark size={26} star={22} />
       </div>
@@ -38,12 +38,12 @@ export function Sidebar() {
               href={href}
               className="flex items-center gap-3 rounded-[14px] px-3 py-[11px] text-[15px] font-semibold transition-colors"
               style={{
-                color: active ? ACTIVE : IDLE,
-                background: active ? "rgba(201,150,46,0.10)" : "transparent",
+                color: active ? "#FFFFFF" : IDLE,
+                background: active ? ACTIVE : "transparent",
               }}
             >
               {label === "Matches" ? (
-                <MatchesNavIcon size={22} fill={active ? ACTIVE : "none"} />
+                <MatchesNavIcon size={22} fill={active ? "#FFFFFF" : "none"} />
               ) : (
                 <Icon size={22} />
               )}

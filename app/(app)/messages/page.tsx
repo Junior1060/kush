@@ -66,7 +66,7 @@ export default async function MessagesPage() {
                 <span
                   className="truncate text-[13.5px]"
                   style={{
-                    color: unread ? "#1B1714" : "#8A8178",
+                    color: unread ? "#0A0A0A" : "#6B6B6B",
                     fontWeight: unread ? 600 : 400,
                   }}
                 >

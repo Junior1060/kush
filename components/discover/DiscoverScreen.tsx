@@ -61,7 +61,7 @@ export function DiscoverScreen({
         <button
           onClick={() => setFiltersOpen(true)}
           aria-label="Filters"
-          className="flex h-[42px] w-[42px] items-center justify-center rounded-[13px] border border-[rgba(27,23,20,0.12)] bg-surface"
+          className="flex h-[42px] w-[42px] items-center justify-center rounded-[13px] border-[1.5px] border-ink bg-white"
         >
           <FilterIcon size={20} />
         </button>

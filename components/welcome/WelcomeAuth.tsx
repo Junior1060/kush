@@ -8,7 +8,7 @@ type Mode = "signup" | "signin";
 type Step = "form" | "verify";
 
 const INPUT =
-  "h-[52px] w-full rounded-input border border-[rgba(27,23,20,0.12)] bg-surface px-[18px] text-[15px] text-ink outline-none placeholder:text-faint focus:border-[rgba(27,23,20,0.3)]";
+  "h-[52px] w-full rounded-input border-[1.5px] border-ink bg-white px-[18px] text-[15px] text-ink outline-none placeholder:text-faint";
 
 export function WelcomeAuth() {
   const router = useRouter();
@@ -115,7 +115,7 @@ export function WelcomeAuth() {
     return (
       <div className="pt-5 text-center">
         <div className="mb-2 text-[30px]">✉️</div>
-        <p className="m-0 mb-4 text-[14.5px] leading-[1.5] text-[#6F665C]">
+        <p className="m-0 mb-4 text-[14.5px] leading-[1.5] text-muted">
           We sent a verification code to{" "}
           <span className="font-semibold text-ink">{email}</span>. Enter it below.
         </p>
@@ -163,7 +163,7 @@ export function WelcomeAuth() {
   // ---- Form step (email / password / confirm) ----
   return (
     <div className="pt-5">
-      <p className="mx-0 mb-4 mt-0 text-center text-[14.5px] leading-[1.45] text-[#6F665C]">
+      <p className="mx-0 mb-4 mt-0 text-center text-[14.5px] leading-[1.45] text-muted">
         {mode === "signup"
           ? "Create your account to meet South Sudanese singles."
           : "Welcome back."}

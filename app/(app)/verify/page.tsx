@@ -11,9 +11,9 @@ export default function VerifyPage() {
     <div className="flex h-full w-full flex-col">
       <SubPageHeader title="Verify your account" />
       <div className="kush-scroll mx-auto w-full max-w-[600px] flex-1 overflow-y-auto px-[22px] pb-[24px]">
-        <div className="mb-5 flex flex-col items-center rounded-card bg-surface px-5 py-8 text-center shadow-card">
-          <div className="flex h-[64px] w-[64px] items-center justify-center rounded-full bg-[#F8E0DE]">
-            <StarIcon size={30} />
+        <div className="mb-5 flex flex-col items-center rounded-card border-[1.5px] border-ink bg-white px-5 py-8 text-center">
+          <div className="flex h-[64px] w-[64px] items-center justify-center rounded-full border-[1.5px] border-ink bg-white">
+            <StarIcon size={30} fill="#0A0A0A" />
           </div>
           <h2 className="mb-1 mt-4 font-display text-[20px] font-bold text-ink">
             Get the gold check

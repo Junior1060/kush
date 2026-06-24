@@ -17,7 +17,7 @@ const cardBase: CSSProperties = {
   inset: 0,
   borderRadius: "26px",
   overflow: "hidden",
-  boxShadow: "0 20px 44px -16px rgba(27,23,20,0.5)",
+  border: "1.5px solid #0A0A0A",
   touchAction: "none",
   userSelect: "none",
   WebkitUserSelect: "none",
@@ -95,7 +95,7 @@ export function SwipeDeck({ profiles }: { profiles: Profile[] }) {
       <div className="relative mx-[18px] flex-1">
         {deckEmpty && (
           <div className="absolute inset-0 flex flex-col items-center justify-center px-[30px] text-center">
-            <StarIcon size={40} fill="#E2D7C2" />
+            <StarIcon size={40} fill="#B0B0B0" />
             <div className="mt-[14px] font-display text-[20px] font-bold text-ink">
               That&rsquo;s everyone for now
             </div>
@@ -166,21 +166,21 @@ export function SwipeDeck({ profiles }: { profiles: Profile[] }) {
           <button
             onClick={() => act("pass")}
             aria-label="Pass"
-            className="flex h-[58px] w-[58px] items-center justify-center rounded-full border border-[rgba(27,23,20,0.1)] bg-surface shadow-btn-pass"
+            className="flex h-[58px] w-[58px] items-center justify-center rounded-full border-[1.5px] border-ink bg-white"
           >
-            <CloseIcon size={24} />
+            <CloseIcon size={24} stroke="#0A0A0A" />
           </button>
           <button
             onClick={() => act("star")}
             aria-label="Super like"
-            className="flex h-[50px] w-[50px] items-center justify-center rounded-full border-none bg-gold shadow-btn-star"
+            className="flex h-[50px] w-[50px] items-center justify-center rounded-full border-[1.5px] border-ink bg-white"
           >
-            <StarIcon size={23} fill="#FFFFFF" />
+            <StarIcon size={23} fill="#0A0A0A" />
           </button>
           <button
             onClick={() => act("like")}
             aria-label="Like"
-            className="flex h-[58px] w-[58px] items-center justify-center rounded-full border-none bg-red shadow-btn-like"
+            className="flex h-[58px] w-[58px] items-center justify-center rounded-full border-[1.5px] border-ink bg-ink"
           >
             <HeartIcon size={26} />
           </button>

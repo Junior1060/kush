@@ -6,12 +6,13 @@ import { getOwnProfile } from "@/lib/queries";
 import { firstPhotoUrl } from "@/lib/photos";
 import { signOut } from "@/app/(app)/actions";
 import { GearIcon, ChevronIcon } from "@/components/icons";
+import { PLACEHOLDER_BG } from "@/lib/style";
 
 const SETTINGS = [
-  { label: "Edit profile & photos", glyph: "✎", bg: "#F4E7CE", href: "/onboarding?edit=1" },
-  { label: "Preferences", glyph: "⚙", bg: "#E6EFE9", href: "/preferences" },
-  { label: "Verify your account", glyph: "★", bg: "#F8E0DE", href: "/verify" },
-  { label: "Privacy & safety", glyph: "⛨", bg: "#E7ECF5", href: "/privacy" },
+  { label: "Edit profile & photos", glyph: "✎", bg: "#F2F2F2", href: "/onboarding?edit=1" },
+  { label: "Preferences", glyph: "⚙", bg: "#F2F2F2", href: "/preferences" },
+  { label: "Verify your account", glyph: "★", bg: "#F2F2F2", href: "/verify" },
+  { label: "Privacy & safety", glyph: "⛨", bg: "#F2F2F2", href: "/privacy" },
 ];
 
 // Profile completeness, weighted evenly across the fields a user can fill.
@@ -64,7 +65,7 @@ export default async function ProfilePage() {
         <Link
           href="/preferences"
           aria-label="Settings"
-          className="flex h-[42px] w-[42px] items-center justify-center rounded-[13px] border border-[rgba(27,23,20,0.12)] bg-surface"
+          className="flex h-[42px] w-[42px] items-center justify-center rounded-[13px] border-[1.5px] border-ink bg-white"
         >
           <GearIcon size={19} />
         </Link>
@@ -72,11 +73,11 @@ export default async function ProfilePage() {
 
       {/* Hero */}
       <div
-        className="relative aspect-square overflow-hidden rounded-card shadow-[0_18px_40px_-16px_rgba(30,58,107,0.5)]"
-        style={{ background: photo ? "#000" : "linear-gradient(150deg,#3F6E8C,#1E3A6B)" }}
+        className="relative aspect-square overflow-hidden rounded-card border-[1.5px] border-ink"
+        style={{ background: photo ? "#000" : PLACEHOLDER_BG }}
       >
         {photo ? (
-          <img src={photo} alt={name} className="absolute inset-0 h-full w-full object-cover" />
+          <img src={photo} alt={name} className="kush-photo absolute inset-0 h-full w-full object-cover" />
         ) : (
           <>
             <div className="absolute inset-0 bg-[repeating-linear-gradient(120deg,rgba(255,255,255,0.05)_0_2px,transparent_2px_14px)]" />
@@ -85,8 +86,8 @@ export default async function ProfilePage() {
             </div>
           </>
         )}
-        <div className="absolute inset-x-0 bottom-0 h-[55%] bg-[linear-gradient(to_top,rgba(10,20,40,0.85),transparent)]" />
-        <div className="absolute bottom-[18px] left-[20px] text-[#FBF5EC]">
+        <div className="absolute inset-x-0 bottom-0 h-[55%] bg-[linear-gradient(to_top,rgba(0,0,0,0.85),transparent)]" />
+        <div className="absolute bottom-[18px] left-[20px] text-white">
           <div className="flex items-center gap-2">
             <span className="font-display text-[27px] font-bold tracking-[-0.5px]">{name}</span>
             {age && (
@@ -98,14 +99,14 @@ export default async function ProfilePage() {
       </div>
 
       {/* Profile strength */}
-      <div className="mt-[18px] rounded-[20px] border border-[rgba(27,23,20,0.06)] bg-surface px-[18px] pb-[6px] pt-[18px]">
+      <div className="mt-[18px] rounded-[20px] border-[1.5px] border-ink bg-white px-[18px] pb-[6px] pt-[18px]">
         <div className="flex items-center justify-between">
           <span className="text-[15px] font-bold text-ink">Profile strength</span>
-          <span className="text-[15px] font-bold text-gold">{strength}%</span>
+          <span className="text-[15px] font-bold text-ink">{strength}%</span>
         </div>
-        <div className="my-[11px] mb-[14px] h-2 overflow-hidden rounded-[5px] bg-[#EFE7DA]">
+        <div className="my-[11px] mb-[14px] h-2 overflow-hidden rounded-[5px] border border-ink bg-white">
           <div
-            className="h-full rounded-[5px] bg-[linear-gradient(90deg,#D8A33B,#CE3B33)]"
+            className="h-full rounded-[5px] bg-ink"
             style={{ width: `${strength}%` }}
           />
         </div>
@@ -117,15 +118,15 @@ export default async function ProfilePage() {
       </div>
 
       {/* Settings list */}
-      <div className="mt-[14px] overflow-hidden rounded-[20px] border border-[rgba(27,23,20,0.06)] bg-surface">
+      <div className="mt-[14px] overflow-hidden rounded-[20px] border-[1.5px] border-ink bg-white">
         {SETTINGS.map((s) => (
           <Link
             key={s.label}
             href={s.href}
-            className="flex w-full items-center gap-[14px] border-b border-[rgba(27,23,20,0.06)] px-[18px] py-[15px] text-left last:border-b-0"
+            className="flex w-full items-center gap-[14px] border-b border-[rgba(10,10,10,0.1)] px-[18px] py-[15px] text-left last:border-b-0"
           >
             <div
-              className="flex h-[36px] w-[36px] flex-none items-center justify-center rounded-[11px]"
+              className="flex h-[36px] w-[36px] flex-none items-center justify-center rounded-[11px] border border-ink"
               style={{ background: s.bg }}
             >
               <span className="text-[16px]">{s.glyph}</span>
@@ -139,7 +140,7 @@ export default async function ProfilePage() {
       <form action={signOut}>
         <button
           type="submit"
-          className="mt-4 h-[50px] w-full rounded-button border border-[rgba(206,59,51,0.3)] bg-transparent text-[15px] font-bold text-red"
+          className="mt-4 h-[50px] w-full rounded-button border-[1.5px] border-ink bg-white text-[15px] font-bold text-ink"
         >
           Log out
         </button>

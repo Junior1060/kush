@@ -32,12 +32,12 @@ function Toggle({ on, onClick }: { on: boolean; onClick: () => void }) {
       onClick={onClick}
       role="switch"
       aria-checked={on}
-      className="relative h-[28px] w-[48px] flex-none rounded-full transition-colors duration-150"
-      style={{ background: on ? "#2E7D54" : "#D8CFC1" }}
+      className="relative h-[28px] w-[48px] flex-none rounded-full border-[1.5px] border-ink transition-colors duration-150"
+      style={{ background: on ? "#0A0A0A" : "#FFFFFF" }}
     >
       <span
-        className="absolute top-[3px] h-[22px] w-[22px] rounded-full bg-white shadow-sm transition-all duration-150"
-        style={{ left: on ? "23px" : "3px" }}
+        className="absolute top-[2px] h-[21px] w-[21px] rounded-full transition-all duration-150"
+        style={{ left: on ? "23px" : "2px", background: on ? "#FFFFFF" : "#0A0A0A" }}
       />
     </button>
   );
@@ -75,7 +75,7 @@ export default function PrivacyPage() {
           Control what others can see. Changes save automatically.
         </p>
 
-        <div className="overflow-hidden rounded-[20px] border border-[rgba(27,23,20,0.06)] bg-surface">
+        <div className="overflow-hidden rounded-[20px] border-[1.5px] border-ink bg-white">
           {ROWS.map((row) => (
             <div
               key={row.key}
