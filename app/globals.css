@@ -40,7 +40,7 @@ input[type="range"].accent-gold {
   accent-color: #0a0a0a;
 }
 
-/* All displayed user photos render grayscale (editorial style) */
+/* User photos display exactly as uploaded — full color, no filter. */
 .kush-photo {
-  filter: grayscale(1) contrast(1.02);
+  /* intentionally no filter */
 }
