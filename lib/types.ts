@@ -4,6 +4,7 @@ export type Gender = "Woman" | "Man" | "Nonbinary";
 export type ShowMe = "Women" | "Men" | "Everyone";
 export type LocationFocus = "Home" | "Diaspora" | "Both";
 export type SwipeDirection = "like" | "pass" | "star";
+export type AccessStatus = "active" | "waitlist";
 
 export interface Profile {
   id: string;
@@ -21,6 +22,7 @@ export interface Profile {
   location_focus: LocationFocus | null;
   tint: string; // CSS gradient placeholder color, e.g. "linear-gradient(150deg,#E0A24F,#A85A22)"
   initial: string; // first letter, used in avatars
+  access_status: AccessStatus; // 'waitlist' users only see the waitlist screen
   created_at: string;
   last_active_at: string;
 }

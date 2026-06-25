@@ -58,6 +58,9 @@ export async function updateProfile(
       tags: input.tags.filter(Boolean).slice(0, 6),
       location_focus: input.location_focus,
       photos: input.photos,
+      // access_status is intentionally not set here: it's server-controlled by the
+      // enforce_access_status DB trigger (men -> waitlist on onboarding completion),
+      // so a client can never elevate itself out of the waitlist.
     })
     .eq("id", user.id);
 

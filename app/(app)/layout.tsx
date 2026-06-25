@@ -22,6 +22,10 @@ export default async function AppLayout({
   const profile = await getOwnProfile(supabase, user.id);
   if (!isProfileComplete(profile)) redirect("/onboarding");
 
+  // Waitlisted users (men, until access opens) only ever see the waitlist screen.
+  // This is the single gate for all four app surfaces: discovery, matches, likes, messaging.
+  if (profile && profile.access_status !== "active") redirect("/waitlist");
+
   return (
     <PhoneFrame>
       <AppShell>{children}</AppShell>

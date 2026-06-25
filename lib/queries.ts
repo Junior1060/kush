@@ -15,7 +15,7 @@ function toProfile(row: ProfileRow): Profile {
 }
 
 const PROFILE_COLS =
-  "id, name, age, city, country, route, bio, tags, photos, gender, looking_for, tribe, location_focus, tint, created_at, last_active_at";
+  "id, name, age, city, country, route, bio, tags, photos, gender, looking_for, tribe, location_focus, tint, access_status, created_at, last_active_at";
 
 // Bumps the user's recent-activity timestamp (used for discover ranking).
 export async function touchLastActive(
