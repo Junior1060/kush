@@ -140,6 +140,80 @@ export async function sendMessage(matchId: string, body: string): Promise<void> 
   revalidatePath("/messages");
 }
 
+// Edit one of your own messages. RLS + the sender_id filter make it impossible to
+// edit someone else's. `edited_at` is stamped so the UI can show an "edited" marker.
+export async function editMessage(
+  matchId: string,
+  messageId: string,
+  body: string
+): Promise<void> {
+  const trimmed = body.trim();
+  if (!trimmed) return;
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+
+  await supabase
+    .from("messages")
+    .update({ body: trimmed, edited_at: new Date().toISOString() })
+    .eq("id", messageId)
+    .eq("sender_id", user.id);
+
+  revalidatePath(`/chat/${matchId}`);
+  revalidatePath("/messages");
+}
+
+// Delete one of your own messages.
+export async function deleteMessage(
+  matchId: string,
+  messageId: string
+): Promise<void> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+
+  await supabase
+    .from("messages")
+    .delete()
+    .eq("id", messageId)
+    .eq("sender_id", user.id);
+
+  revalidatePath(`/chat/${matchId}`);
+  revalidatePath("/messages");
+}
+
+// Mark every message I've received across all matches as delivered (called when
+// the inbox loads). Uses a SECURITY DEFINER RPC so the recipient can stamp receipts
+// on messages they don't own.
+export async function markDelivered(): Promise<void> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+
+  await supabase.rpc("mark_delivered");
+  revalidatePath("/messages");
+}
+
+// Mark the other person's messages in this match as read (called when I open the
+// conversation). Read implies delivered.
+export async function markRead(matchId: string): Promise<void> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+
+  await supabase.rpc("mark_read", { p_match_id: matchId });
+  revalidatePath("/messages");
+}
+
 export async function signOut(): Promise<void> {
   const supabase = await createClient();
   await supabase.auth.signOut();

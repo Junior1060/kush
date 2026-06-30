@@ -4,6 +4,7 @@ import { getConversations } from "@/lib/queries";
 import { firstPhotoUrl } from "@/lib/photos";
 import { formatListTime } from "@/lib/time";
 import { Avatar } from "@/components/Avatar";
+import { MarkDelivered } from "@/components/chat/MarkDelivered";
 
 export default async function MessagesPage() {
   const supabase = await createClient();
@@ -22,6 +23,7 @@ export default async function MessagesPage() {
 
   return (
     <div className="kush-scroll mx-auto h-full w-full max-w-[680px] overflow-y-auto pb-[24px] pt-1">
+      <MarkDelivered />
       <h1 className="mx-[22px] mb-4 mt-[6px] font-display text-[26px] font-bold tracking-[-0.5px] text-ink">
         Messages
       </h1>

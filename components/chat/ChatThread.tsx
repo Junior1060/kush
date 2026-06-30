@@ -5,7 +5,12 @@ import Link from "next/link";
 import type { Message, Profile } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
 import { firstPhotoUrl } from "@/lib/photos";
-import { sendMessage } from "@/app/(app)/actions";
+import {
+  deleteMessage,
+  editMessage,
+  markRead,
+  sendMessage,
+} from "@/app/(app)/actions";
 import { Avatar } from "@/components/Avatar";
 import { BackIcon, SendIcon } from "@/components/icons";
 
@@ -24,9 +29,12 @@ export function ChatThread({
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
+  const [menuFor, setMenuFor] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // Realtime: append messages inserted into this match by either party.
+  // Realtime: reflect inserts, edits, and deletions from either party live.
   useEffect(() => {
     const channel = supabase
       .channel(`messages:${matchId}`)
@@ -45,6 +53,32 @@ export function ChatThread({
           );
         }
       )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "messages",
+          filter: `match_id=eq.${matchId}`,
+        },
+        (payload) => {
+          const msg = payload.new as Message;
+          setMessages((prev) => prev.map((m) => (m.id === msg.id ? msg : m)));
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "messages",
+          filter: `match_id=eq.${matchId}`,
+        },
+        (payload) => {
+          const gone = payload.old as Message;
+          setMessages((prev) => prev.filter((m) => m.id !== gone.id));
+        }
+      )
       .subscribe();
 
     return () => {
@@ -57,13 +91,67 @@ export function ChatThread({
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [messages]);
 
+  // Opening the conversation marks the other person's messages as read. Re-runs
+  // when a new unread message from them arrives while the thread is open.
+  const unreadIncoming = messages.some(
+    (m) => m.sender_id !== meId && !m.read_at
+  );
+  useEffect(() => {
+    if (unreadIncoming) void markRead(matchId);
+  }, [matchId, unreadIncoming]);
+
+  // The last message I sent — the only one that shows a delivery/read status.
+  const lastMineId = useMemo(() => {
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].sender_id === meId) return messages[i].id;
+    }
+    return null;
+  }, [messages, meId]);
+
+  const editing = editingId
+    ? messages.find((m) => m.id === editingId) ?? null
+    : null;
+
   async function send() {
     const body = draft.trim();
     if (!body || sending) return;
+
+    // Editing an existing message.
+    if (editingId) {
+      const id = editingId;
+      const stamp = new Date().toISOString();
+      setMessages((prev) =>
+        prev.map((m) => (m.id === id ? { ...m, body, edited_at: stamp } : m))
+      );
+      setEditingId(null);
+      setDraft("");
+      await editMessage(matchId, id, body);
+      return;
+    }
+
     setDraft("");
     setSending(true);
     await sendMessage(matchId, body);
     setSending(false);
+  }
+
+  function startEdit(m: Message) {
+    setMenuFor(null);
+    setEditingId(m.id);
+    setDraft(m.body);
+    requestAnimationFrame(() => inputRef.current?.focus());
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setDraft("");
+  }
+
+  async function remove(m: Message) {
+    setMenuFor(null);
+    if (editingId === m.id) cancelEdit();
+    setMessages((prev) => prev.filter((x) => x.id !== m.id)); // optimistic
+    await deleteMessage(matchId, m.id);
   }
 
   return (
@@ -105,22 +193,60 @@ export function ChatThread({
         </div>
         {messages.map((m) => {
           const mine = m.sender_id === meId;
+          const menuOpen = menuFor === m.id;
           return (
             <div
               key={m.id}
-              className="flex"
-              style={{ justifyContent: mine ? "flex-end" : "flex-start" }}
+              className="flex flex-col"
+              style={{ alignItems: mine ? "flex-end" : "flex-start" }}
             >
               <div
-                className="max-w-[74%] px-[15px] py-[11px] text-[14.5px] leading-[1.4]"
-                style={{
-                  borderRadius: mine ? "20px 20px 5px 20px" : "20px 20px 20px 5px",
-                  background: mine ? "#0A0A0A" : "#FFFFFF",
-                  color: mine ? "#FFFFFF" : "#0A0A0A",
-                  border: "1.5px solid #0A0A0A",
-                }}
+                className="flex items-center gap-2"
+                style={{ flexDirection: mine ? "row" : "row-reverse" }}
               >
-                {m.body}
+                {/* Action menu — only on your own messages. */}
+                {mine &&
+                  (menuOpen ? (
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => startEdit(m)}
+                        className="rounded-full border-[1.5px] border-ink bg-white px-[10px] py-[3px] text-[11px] font-bold text-ink"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => remove(m)}
+                        className="rounded-full border-[1.5px] border-ink bg-white px-[10px] py-[3px] text-[11px] font-bold text-ink"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  ) : null)}
+
+                <button
+                  type="button"
+                  onClick={() => mine && setMenuFor(menuOpen ? null : m.id)}
+                  className="max-w-[74%] cursor-pointer px-[15px] py-[11px] text-left text-[14.5px] leading-[1.4]"
+                  style={{
+                    borderRadius: mine
+                      ? "20px 20px 5px 20px"
+                      : "20px 20px 20px 5px",
+                    background: mine ? "#0A0A0A" : "#FFFFFF",
+                    color: mine ? "#FFFFFF" : "#0A0A0A",
+                    border: editingId === m.id ? "1.5px dashed #FFFFFF" : "1.5px solid #0A0A0A",
+                    cursor: mine ? "pointer" : "default",
+                  }}
+                >
+                  {m.body}
+                </button>
+              </div>
+              <div className="mt-[2px] flex items-center gap-1 px-1 text-[10.5px] text-faint">
+                {m.edited_at && <span>edited</span>}
+                {mine && m.id === lastMineId && (
+                  <span className={m.read_at ? "font-semibold text-[#2E7D54]" : ""}>
+                    {m.read_at ? "Seen" : m.delivered_at ? "Delivered" : "Sent"}
+                  </span>
+                )}
               </div>
             </div>
           );
@@ -128,22 +254,41 @@ export function ChatThread({
       </div>
 
       {/* Composer */}
-      <div className="mx-auto flex w-full max-w-[760px] flex-none items-center gap-[10px] px-4 pb-4 pt-[10px]">
-        <input
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && send()}
-          placeholder={`Message ${profile.name}…`}
-          className="h-[46px] flex-1 rounded-pill border-[1.5px] border-ink bg-white px-[18px] text-[14.5px] text-ink outline-none placeholder:text-faint"
-        />
-        <button
-          onClick={send}
-          disabled={sending}
-          aria-label="Send"
-          className="flex h-[46px] w-[46px] flex-none items-center justify-center rounded-full border-[1.5px] border-ink bg-ink disabled:opacity-70"
-        >
-          <SendIcon size={20} />
-        </button>
+      <div className="mx-auto w-full max-w-[760px] flex-none px-4 pb-4 pt-[10px]">
+        {editing && (
+          <div className="mb-[6px] flex items-center justify-between px-1 text-[12px] text-muted">
+            <span className="truncate">
+              Editing: <span className="text-ink">{editing.body}</span>
+            </span>
+            <button
+              onClick={cancelEdit}
+              className="flex-none font-semibold text-ink underline"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+        <div className="flex items-center gap-[10px]">
+          <input
+            ref={inputRef}
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") send();
+              if (e.key === "Escape" && editingId) cancelEdit();
+            }}
+            placeholder={editingId ? "Edit message…" : `Message ${profile.name}…`}
+            className="h-[46px] flex-1 rounded-pill border-[1.5px] border-ink bg-white px-[18px] text-[14.5px] text-ink outline-none placeholder:text-faint"
+          />
+          <button
+            onClick={send}
+            disabled={sending}
+            aria-label={editingId ? "Save edit" : "Send"}
+            className="flex h-[46px] w-[46px] flex-none items-center justify-center rounded-full border-[1.5px] border-ink bg-ink text-cream disabled:opacity-70"
+          >
+            {editingId ? <span className="text-[18px] font-bold">✓</span> : <SendIcon size={20} />}
+          </button>
+        </div>
       </div>
     </div>
   );

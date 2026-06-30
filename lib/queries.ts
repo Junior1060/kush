@@ -17,6 +17,9 @@ function toProfile(row: ProfileRow): Profile {
 const PROFILE_COLS =
   "id, name, age, city, country, route, bio, tags, photos, gender, looking_for, tribe, location_focus, tint, access_status, created_at, last_active_at";
 
+const MESSAGE_COLS =
+  "id, match_id, sender_id, body, created_at, edited_at, delivered_at, read_at";
+
 // Bumps the user's recent-activity timestamp (used for discover ranking).
 export async function touchLastActive(
   supabase: SupabaseClient,
@@ -108,30 +111,19 @@ export async function getConversations(
 
       const { data: last } = await supabase
         .from("messages")
-        .select("id, match_id, sender_id, body, created_at")
+        .select(MESSAGE_COLS)
         .eq("match_id", m.id)
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
 
-      // Unread heuristic (no read-receipt table): messages from the other person
-      // newer than my most recent reply in this match.
-      const { data: myLast } = await supabase
-        .from("messages")
-        .select("created_at")
-        .eq("match_id", m.id)
-        .eq("sender_id", userId)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      let unreadQuery = supabase
+      // Unread = incoming messages I haven't read yet (read_at still null).
+      const { count } = await supabase
         .from("messages")
         .select("id", { count: "exact", head: true })
         .eq("match_id", m.id)
-        .neq("sender_id", userId);
-      if (myLast?.created_at) unreadQuery = unreadQuery.gt("created_at", myLast.created_at);
-      const { count } = await unreadQuery;
+        .neq("sender_id", userId)
+        .is("read_at", null);
 
       const profile = profileById.get(otherId);
       if (!profile) return null;
@@ -186,7 +178,7 @@ export async function getMessages(
 ): Promise<Message[]> {
   const { data, error } = await supabase
     .from("messages")
-    .select("id, match_id, sender_id, body, created_at")
+    .select(MESSAGE_COLS)
     .eq("match_id", matchId)
     .order("created_at", { ascending: true });
 

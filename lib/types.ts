@@ -40,6 +40,9 @@ export interface Message {
   sender_id: string;
   body: string;
   created_at: string;
+  edited_at?: string | null;
+  delivered_at?: string | null;
+  read_at?: string | null;
 }
 
 // A match joined to the other person's profile + last message, for list views.
