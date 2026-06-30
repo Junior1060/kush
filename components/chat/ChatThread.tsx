@@ -12,6 +12,7 @@ import {
   sendMessage,
 } from "@/app/(app)/actions";
 import { Avatar } from "@/components/Avatar";
+import { OnlineDot, OnlineStatus } from "@/components/presence/OnlineStatus";
 import { BackIcon, SendIcon } from "@/components/icons";
 
 export function ChatThread({
@@ -172,22 +173,27 @@ export function ChatThread({
         >
           <BackIcon size={22} />
         </Link>
-        <Avatar
-          initial={profile.initial}
-          tint={profile.tint}
-          photoUrl={firstPhotoUrl(supabase, profile.photos)}
-          size={40}
-          fontSize={16}
-        />
-        <div className="min-w-0 flex-1">
-          <div className="font-body text-[16px] font-bold text-ink">
-            {profile.name}
+        <Link
+          href={`/u/${profile.id}`}
+          aria-label={`View ${profile.name}'s profile`}
+          className="flex min-w-0 flex-1 items-center gap-3"
+        >
+          <Avatar
+            initial={profile.initial}
+            tint={profile.tint}
+            photoUrl={firstPhotoUrl(supabase, profile.photos)}
+            size={40}
+            fontSize={16}
+          >
+            <OnlineDot userId={profile.id} />
+          </Avatar>
+          <div className="min-w-0 flex-1">
+            <div className="font-body text-[16px] font-bold text-ink">
+              {profile.name}
+            </div>
+            <OnlineStatus userId={profile.id} lastActiveAt={profile.last_active_at} />
           </div>
-          <div className="flex items-center gap-[5px] text-[12px] font-semibold text-[#2E7D54]">
-            <span className="h-[7px] w-[7px] rounded-full bg-[#2E7D54]" />
-            Active now
-          </div>
-        </div>
+        </Link>
       </div>
 
       {/* Thread */}

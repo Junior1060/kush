@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { BottomNav } from "./BottomNav";
 import { Sidebar } from "./Sidebar";
+import { PresenceProvider } from "./presence/PresenceProvider";
 
 type Toast = {
   kind: "message" | "match" | "like";
@@ -184,7 +185,9 @@ export function AppShell({
     <div className="relative flex h-full w-full">
       <Sidebar unread={unread} notif={notif} />
       <div className="flex h-full min-w-0 flex-1 flex-col">
-        <div className="relative flex flex-1 flex-col overflow-hidden">{children}</div>
+        <div className="relative flex flex-1 flex-col overflow-hidden">
+          <PresenceProvider userId={userId}>{children}</PresenceProvider>
+        </div>
         {!isChat && (
           <div className="lg:hidden">
             <BottomNav unread={unread} notif={notif} />

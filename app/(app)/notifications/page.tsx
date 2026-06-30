@@ -83,13 +83,15 @@ export default async function NotificationsPage() {
             </div>
           );
 
-          // Matches deep-link to the conversation; likes are informational.
+          // Matches deep-link to the conversation; likes open the liker's profile.
           return n.matchId ? (
             <Link key={`m-${n.matchId}`} href={`/chat/${n.matchId}`}>
               {row}
             </Link>
           ) : (
-            <div key={`l-${n.profile.id}-${n.createdAt}`}>{row}</div>
+            <Link key={`l-${n.profile.id}-${n.createdAt}`} href={`/u/${n.profile.id}`}>
+              {row}
+            </Link>
           );
         })}
       </div>

@@ -80,6 +80,21 @@ export async function getOwnProfile(
   return data ? toProfile(data) : null;
 }
 
+/** Any profile by id (RLS allows authenticated users to read all profiles). */
+export async function getProfileById(
+  supabase: SupabaseClient,
+  id: string
+): Promise<Profile | null> {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select(PROFILE_COLS)
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data ? toProfile(data) : null;
+}
+
 /** All of the current user's matches, joined to the other person's profile + last message. */
 export async function getConversations(
   supabase: SupabaseClient,

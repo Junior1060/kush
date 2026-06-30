@@ -4,6 +4,7 @@ import { getConversations } from "@/lib/queries";
 import { firstPhotoUrl } from "@/lib/photos";
 import { formatListTime } from "@/lib/time";
 import { Avatar } from "@/components/Avatar";
+import { OnlineDot } from "@/components/presence/OnlineStatus";
 import { MarkDelivered } from "@/components/chat/MarkDelivered";
 
 export default async function MessagesPage() {
@@ -54,7 +55,9 @@ export default async function MessagesPage() {
               photoUrl={firstPhotoUrl(supabase, c.profile.photos)}
               size={56}
               fontSize={21}
-            />
+            >
+              <OnlineDot userId={c.profile.id} />
+            </Avatar>
             <div className="min-w-0 flex-1 border-b border-[rgba(27,23,20,0.07)] pb-[13px]">
               <div className="flex items-baseline justify-between gap-2">
                 <span className="font-body text-[16px] font-bold text-ink">
