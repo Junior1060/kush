@@ -131,7 +131,14 @@ export function ChatThread({
 
     setDraft("");
     setSending(true);
-    await sendMessage(matchId, body);
+    const sent = await sendMessage(matchId, body);
+    // Show the sent message immediately rather than waiting for the realtime
+    // INSERT to echo back. Dedup by id so the realtime event is a no-op.
+    if (sent) {
+      setMessages((prev) =>
+        prev.some((m) => m.id === sent.id) ? prev : [...prev, sent]
+      );
+    }
     setSending(false);
   }
 

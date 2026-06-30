@@ -6,7 +6,12 @@ import { createClient } from "@/lib/supabase/client";
 import { BottomNav } from "./BottomNav";
 import { Sidebar } from "./Sidebar";
 
-type Toast = { matchId: string; name: string; preview: string };
+type Toast = {
+  kind: "message" | "match";
+  matchId: string;
+  name: string;
+  preview: string;
+};
 
 // Responsive app layout: left sidebar nav on desktop, bottom tab bar on mobile.
 // The nav is hidden on Chat (full-screen conversation) on mobile.
@@ -67,6 +72,7 @@ export function AppShell({
 
           if (toastTimer.current) clearTimeout(toastTimer.current);
           setToast({
+            kind: "message",
             matchId: msg.match_id,
             name: data?.name || "New message",
             preview:
@@ -80,6 +86,38 @@ export function AppShell({
         { event: "UPDATE", schema: "public", table: "messages" },
         () => refresh() // read receipts change my unread count
       )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "matches" },
+        async (payload) => {
+          const row = payload.new as {
+            id: string;
+            user_a: string;
+            user_b: string;
+          };
+          if (row.user_a !== userId && row.user_b !== userId) return;
+          const otherId = row.user_a === userId ? row.user_b : row.user_a;
+          refresh(); // update the Matches/Messages lists if open
+
+          // The Discover deck shows its own match toast for the active swiper.
+          if (pathnameRef.current.startsWith("/discover")) return;
+
+          const { data } = await supabase
+            .from("profiles")
+            .select("name")
+            .eq("id", otherId)
+            .maybeSingle();
+
+          if (toastTimer.current) clearTimeout(toastTimer.current);
+          setToast({
+            kind: "match",
+            matchId: row.id,
+            name: data?.name || "Someone",
+            preview: "You matched! 🎉",
+          });
+          toastTimer.current = setTimeout(() => setToast(null), 6000);
+        }
+      )
       .subscribe();
 
     return () => {
@@ -91,9 +129,9 @@ export function AppShell({
 
   function openToast() {
     if (!toast) return;
-    const { matchId } = toast;
+    const { kind, matchId } = toast;
     setToast(null);
-    router.push(`/chat/${matchId}`);
+    router.push(kind === "match" ? "/matches" : `/chat/${matchId}`);
   }
 
   return (

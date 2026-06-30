@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import type { Gender, LocationFocus, ShowMe, SwipeDirection } from "@/lib/types";
+import type { Gender, LocationFocus, Message, ShowMe, SwipeDirection } from "@/lib/types";
 import { buildRoute } from "@/lib/profile";
 import { touchLastActive } from "@/lib/queries";
 
@@ -120,24 +120,31 @@ export async function updateLookingFor(value: ShowMe): Promise<void> {
   revalidatePath("/discover");
 }
 
-export async function sendMessage(matchId: string, body: string): Promise<void> {
+export async function sendMessage(
+  matchId: string,
+  body: string
+): Promise<Message | null> {
   const trimmed = body.trim();
-  if (!trimmed) return;
+  if (!trimmed) return null;
 
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return;
+  if (!user) return null;
 
-  await supabase
+  const { data } = await supabase
     .from("messages")
-    .insert({ match_id: matchId, sender_id: user.id, body: trimmed });
+    .insert({ match_id: matchId, sender_id: user.id, body: trimmed })
+    .select()
+    .single();
 
   await touchLastActive(supabase, user.id);
 
   revalidatePath(`/chat/${matchId}`);
   revalidatePath("/messages");
+
+  return (data as Message) ?? null;
 }
 
 // Edit one of your own messages. RLS + the sender_id filter make it impossible to
