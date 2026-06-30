@@ -111,7 +111,13 @@ export function ProfileDetail({
             <div className="flex flex-col gap-3">
               {photoUrls.slice(1).map((url, i) => (
                 <div key={i} className="overflow-hidden rounded-[18px] border-[1.5px] border-ink">
-                  <img src={url} alt="" className="kush-photo w-full object-cover" />
+                  <img
+                    src={url}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    className="kush-photo w-full object-cover"
+                  />
                 </div>
               ))}
             </div>

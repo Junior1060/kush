@@ -19,7 +19,7 @@ const TABS = [
   { href: "/profile", label: "Profile", Icon: ProfileNavIcon },
 ];
 
-export function BottomNav() {
+export function BottomNav({ unread = 0 }: { unread?: number }) {
   const pathname = usePathname();
 
   return (
@@ -27,6 +27,7 @@ export function BottomNav() {
       {TABS.map(({ href, label, Icon }) => {
         const active = pathname === href || pathname.startsWith(href + "/");
         const color = active ? ACTIVE : IDLE;
+        const badge = label === "Messages" && unread > 0;
         return (
           <Link
             key={href}
@@ -34,11 +35,18 @@ export function BottomNav() {
             className="flex flex-1 flex-col items-center gap-[5px]"
             style={{ color }}
           >
-            {label === "Matches" ? (
-              <MatchesNavIcon fill={active ? ACTIVE : "none"} />
-            ) : (
-              <Icon />
-            )}
+            <div className="relative">
+              {label === "Matches" ? (
+                <MatchesNavIcon fill={active ? ACTIVE : "none"} />
+              ) : (
+                <Icon />
+              )}
+              {badge && (
+                <span className="absolute -right-[10px] -top-[6px] flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-red px-[4px] text-[10px] font-bold leading-none text-white">
+                  {unread > 9 ? "9+" : unread}
+                </span>
+              )}
+            </div>
             <span className="text-[11px] font-semibold">{label}</span>
           </Link>
         );

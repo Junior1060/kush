@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { PhoneFrame } from "@/components/PhoneFrame";
 import { AppShell } from "@/components/AppShell";
 import { createClient } from "@/lib/supabase/server";
-import { getOwnProfile } from "@/lib/queries";
+import { getOwnProfile, getUnreadTotal } from "@/lib/queries";
 import { isProfileComplete } from "@/lib/profile";
 
 // Protected shell for the four tabbed screens + chat.
@@ -27,9 +27,13 @@ export default async function AppLayout({
   // migration 11_open_access.sql (which also stops new men being waitlisted).
   // if (profile && profile.access_status !== "active") redirect("/waitlist");
 
+  const unread = await getUnreadTotal(supabase, user.id);
+
   return (
     <PhoneFrame>
-      <AppShell>{children}</AppShell>
+      <AppShell unread={unread} userId={user.id}>
+        {children}
+      </AppShell>
     </PhoneFrame>
   );
 }

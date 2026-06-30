@@ -197,36 +197,36 @@ export function ChatThread({
           return (
             <div
               key={m.id}
-              className="flex flex-col"
+              className="flex w-full flex-col"
               style={{ alignItems: mine ? "flex-end" : "flex-start" }}
             >
               <div
-                className="flex items-center gap-2"
+                className="flex max-w-[80%] items-center gap-2"
                 style={{ flexDirection: mine ? "row" : "row-reverse" }}
               >
                 {/* Action menu — only on your own messages. */}
-                {mine &&
-                  (menuOpen ? (
-                    <div className="flex items-center gap-1">
-                      <button
-                        onClick={() => startEdit(m)}
-                        className="rounded-full border-[1.5px] border-ink bg-white px-[10px] py-[3px] text-[11px] font-bold text-ink"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => remove(m)}
-                        className="rounded-full border-[1.5px] border-ink bg-white px-[10px] py-[3px] text-[11px] font-bold text-ink"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  ) : null)}
+                {mine && menuOpen && (
+                  <div className="flex flex-none items-center gap-1">
+                    <button
+                      onClick={() => startEdit(m)}
+                      className="rounded-full border-[1.5px] border-ink bg-white px-[10px] py-[3px] text-[11px] font-bold text-ink"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => remove(m)}
+                      className="rounded-full border-[1.5px] border-ink bg-white px-[10px] py-[3px] text-[11px] font-bold text-ink"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                )}
 
-                <button
-                  type="button"
+                <div
+                  role="button"
+                  tabIndex={mine ? 0 : -1}
                   onClick={() => mine && setMenuFor(menuOpen ? null : m.id)}
-                  className="max-w-[74%] cursor-pointer px-[15px] py-[11px] text-left text-[14.5px] leading-[1.4]"
+                  className="min-w-0 whitespace-pre-wrap break-words px-[15px] py-[11px] text-left text-[14.5px] leading-[1.4]"
                   style={{
                     borderRadius: mine
                       ? "20px 20px 5px 20px"
@@ -238,7 +238,7 @@ export function ChatThread({
                   }}
                 >
                   {m.body}
-                </button>
+                </div>
               </div>
               <div className="mt-[2px] flex items-center gap-1 px-1 text-[10.5px] text-faint">
                 {m.edited_at && <span>edited</span>}

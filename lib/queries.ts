@@ -94,50 +94,62 @@ export async function getConversations(
   if (error) throw error;
   if (!matches || matches.length === 0) return [];
 
+  const matchIds = matches.map((m) => m.id);
   const otherIds = matches.map((m) => (m.user_a === userId ? m.user_b : m.user_a));
 
-  const { data: profiles } = await supabase
-    .from("profiles")
-    .select(PROFILE_COLS)
-    .in("id", otherIds);
+  // Two parallel queries instead of 2 per match (the old N+1): all the other
+  // profiles, and every message across these matches in one shot.
+  const [{ data: profiles }, { data: msgs }] = await Promise.all([
+    supabase.from("profiles").select(PROFILE_COLS).in("id", otherIds),
+    supabase
+      .from("messages")
+      .select(MESSAGE_COLS)
+      .in("match_id", matchIds)
+      .order("created_at", { ascending: true }),
+  ]);
 
   const profileById = new Map(
     (profiles ?? []).map((p) => [p.id, toProfile(p)])
   );
 
-  const conversations = await Promise.all(
-    matches.map(async (m): Promise<Conversation | null> => {
-      const otherId = m.user_a === userId ? m.user_b : m.user_a;
+  // Bucket messages by match (already in chronological order).
+  const byMatch = new Map<string, Message[]>();
+  for (const msg of (msgs ?? []) as Message[]) {
+    const arr = byMatch.get(msg.match_id);
+    if (arr) arr.push(msg);
+    else byMatch.set(msg.match_id, [msg]);
+  }
 
-      const { data: last } = await supabase
-        .from("messages")
-        .select(MESSAGE_COLS)
-        .eq("match_id", m.id)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+  const conversations = matches.map((m): Conversation | null => {
+    const otherId = m.user_a === userId ? m.user_b : m.user_a;
+    const profile = profileById.get(otherId);
+    if (!profile) return null;
 
-      // Unread = incoming messages I haven't read yet (read_at still null).
-      const { count } = await supabase
-        .from("messages")
-        .select("id", { count: "exact", head: true })
-        .eq("match_id", m.id)
-        .neq("sender_id", userId)
-        .is("read_at", null);
+    const arr = byMatch.get(m.id) ?? [];
+    const lastMessage = arr.length ? arr[arr.length - 1] : null;
+    // Unread = incoming messages I haven't read yet (read_at still null).
+    const unread = arr.filter(
+      (x) => x.sender_id !== userId && !x.read_at
+    ).length;
 
-      const profile = profileById.get(otherId);
-      if (!profile) return null;
-
-      return {
-        matchId: m.id,
-        profile,
-        lastMessage: (last as Message | null) ?? null,
-        unread: count ?? 0,
-      };
-    })
-  );
+    return { matchId: m.id, profile, lastMessage, unread };
+  });
 
   return conversations.filter((c): c is Conversation => c !== null);
+}
+
+/** Total unread incoming messages across all of my matches (for the nav badge). */
+export async function getUnreadTotal(
+  supabase: SupabaseClient,
+  userId: string
+): Promise<number> {
+  // RLS scopes this to messages in matches I belong to.
+  const { count } = await supabase
+    .from("messages")
+    .select("id", { count: "exact", head: true })
+    .neq("sender_id", userId)
+    .is("read_at", null);
+  return count ?? 0;
 }
 
 /** A single conversation by match id (for the chat header), scoped to the current user. */

@@ -78,6 +78,8 @@ export default async function MatchesPage() {
                     <img
                       src={photo}
                       alt={c.profile.name}
+                      loading="lazy"
+                      decoding="async"
                       className="kush-photo absolute inset-0 h-full w-full object-cover"
                     />
                   ) : (

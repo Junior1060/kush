@@ -21,7 +21,7 @@ const TABS = [
 ];
 
 // Desktop-only left navigation rail.
-export function Sidebar() {
+export function Sidebar({ unread = 0 }: { unread?: number }) {
   const pathname = usePathname();
 
   return (
@@ -47,7 +47,18 @@ export function Sidebar() {
               ) : (
                 <Icon size={22} />
               )}
-              {label}
+              <span className="flex-1">{label}</span>
+              {label === "Messages" && unread > 0 && (
+                <span
+                  className="flex h-[20px] min-w-[20px] items-center justify-center rounded-full px-[6px] text-[11px] font-bold leading-none"
+                  style={{
+                    background: active ? "#FFFFFF" : ACTIVE,
+                    color: active ? ACTIVE : "#FFFFFF",
+                  }}
+                >
+                  {unread > 9 ? "9+" : unread}
+                </span>
+              )}
             </Link>
           );
         })}
