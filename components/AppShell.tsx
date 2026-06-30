@@ -7,7 +7,7 @@ import { BottomNav } from "./BottomNav";
 import { Sidebar } from "./Sidebar";
 
 type Toast = {
-  kind: "message" | "match";
+  kind: "message" | "match" | "like";
   matchId: string;
   name: string;
   preview: string;
@@ -118,6 +118,47 @@ export function AppShell({
           toastTimer.current = setTimeout(() => setToast(null), 6000);
         }
       )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "swipes" },
+        async (payload) => {
+          const row = payload.new as {
+            swiper_id: string;
+            target_id: string;
+            direction: string;
+          };
+          if (row.target_id !== userId) return; // not aimed at me
+          if (row.swiper_id === userId) return; // my own swipe
+          if (row.direction !== "like" && row.direction !== "star") return;
+
+          // If this like completes a mutual match, the match toast (above) is the
+          // more meaningful signal — don't also pop a "likes you" toast.
+          const [a, b] = [userId, row.swiper_id].sort();
+          const { data: match } = await supabase
+            .from("matches")
+            .select("id")
+            .eq("user_a", a)
+            .eq("user_b", b)
+            .maybeSingle();
+          if (match) return;
+
+          const { data } = await supabase
+            .from("profiles")
+            .select("name")
+            .eq("id", row.swiper_id)
+            .maybeSingle();
+
+          if (toastTimer.current) clearTimeout(toastTimer.current);
+          setToast({
+            kind: "like",
+            matchId: "",
+            name: data?.name || "Someone",
+            preview:
+              row.direction === "star" ? "super likes you ⭐" : "likes your profile 💚",
+          });
+          toastTimer.current = setTimeout(() => setToast(null), 5000);
+        }
+      )
       .subscribe();
 
     return () => {
@@ -131,7 +172,9 @@ export function AppShell({
     if (!toast) return;
     const { kind, matchId } = toast;
     setToast(null);
-    router.push(kind === "match" ? "/matches" : `/chat/${matchId}`);
+    if (kind === "match") router.push("/matches");
+    else if (kind === "like") router.push("/discover");
+    else router.push(`/chat/${matchId}`);
   }
 
   return (
@@ -153,7 +196,9 @@ export function AppShell({
             onClick={openToast}
             className="pointer-events-auto flex max-w-[420px] items-center gap-3 rounded-button border-[1.5px] border-ink bg-ink px-4 py-3 text-left text-cream shadow-card"
           >
-            <span className="text-[16px]">💬</span>
+            <span className="text-[16px]">
+              {toast.kind === "match" ? "🎉" : toast.kind === "like" ? "💚" : "💬"}
+            </span>
             <span className="min-w-0 text-[13.5px] leading-[1.3]">
               <span className="font-bold">{toast.name}</span>
               <span className="opacity-90"> · {toast.preview}</span>
