@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Conversation, Message, Profile } from "./types";
+import type { Conversation, Message, NotificationItem, Profile } from "./types";
 import { completenessScore } from "./profile";
 
 // Row shape as stored in Postgres (no derived fields).
@@ -150,6 +150,121 @@ export async function getUnreadTotal(
     .neq("sender_id", userId)
     .is("read_at", null);
   return count ?? 0;
+}
+
+/**
+ * The Notifications feed: people who liked/super-liked you, plus your matches,
+ * newest first. A like that has since become a mutual match is shown once — as
+ * the match — so each person appears with their most meaningful status.
+ *
+ * Reading incoming likes relies on the swipes_select_incoming RLS policy
+ * (migration 15), which only exposes like/star swipes aimed at you.
+ */
+export async function getNotifications(
+  supabase: SupabaseClient,
+  userId: string
+): Promise<NotificationItem[]> {
+  // When did I last open Notifications? Anything newer counts as unseen.
+  const { data: me } = await supabase
+    .from("profiles")
+    .select("notifications_seen_at")
+    .eq("id", userId)
+    .maybeSingle();
+  const seenAt = me?.notifications_seen_at
+    ? new Date(me.notifications_seen_at).getTime()
+    : 0;
+
+  const [{ data: swipes }, { data: matches }] = await Promise.all([
+    supabase
+      .from("swipes")
+      .select("swiper_id, direction, created_at")
+      .eq("target_id", userId)
+      .in("direction", ["like", "star"])
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("matches")
+      .select("id, user_a, user_b, created_at")
+      .or(`user_a.eq.${userId},user_b.eq.${userId}`)
+      .order("created_at", { ascending: false }),
+  ]);
+
+  const matchList = matches ?? [];
+  const matchedWith = new Set(
+    matchList.map((m) => (m.user_a === userId ? m.user_b : m.user_a))
+  );
+  // Likes from people I've already matched are folded into the match entry.
+  const likeRows = (swipes ?? []).filter((s) => !matchedWith.has(s.swiper_id));
+
+  const otherIds = Array.from(
+    new Set([...likeRows.map((s) => s.swiper_id), ...matchedWith])
+  );
+  if (otherIds.length === 0) return [];
+
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select(PROFILE_COLS)
+    .in("id", otherIds);
+  const profileById = new Map((profiles ?? []).map((p) => [p.id, toProfile(p)]));
+
+  const items: NotificationItem[] = [];
+
+  for (const m of matchList) {
+    const otherId = m.user_a === userId ? m.user_b : m.user_a;
+    const profile = profileById.get(otherId);
+    if (!profile) continue;
+    items.push({
+      kind: "match",
+      profile,
+      createdAt: m.created_at,
+      matchId: m.id,
+      unseen: new Date(m.created_at).getTime() > seenAt,
+    });
+  }
+
+  for (const s of likeRows) {
+    const profile = profileById.get(s.swiper_id);
+    if (!profile) continue;
+    items.push({
+      kind: s.direction === "star" ? "star" : "like",
+      profile,
+      createdAt: s.created_at,
+      unseen: new Date(s.created_at).getTime() > seenAt,
+    });
+  }
+
+  items.sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+  return items;
+}
+
+/** Count of unseen notifications (incoming likes + new matches) for the nav badge. */
+export async function getNotificationCount(
+  supabase: SupabaseClient,
+  userId: string
+): Promise<number> {
+  const { data: me } = await supabase
+    .from("profiles")
+    .select("notifications_seen_at")
+    .eq("id", userId)
+    .maybeSingle();
+  const seenAt = me?.notifications_seen_at ?? new Date(0).toISOString();
+
+  const [likes, matches] = await Promise.all([
+    supabase
+      .from("swipes")
+      .select("id", { count: "exact", head: true })
+      .eq("target_id", userId)
+      .in("direction", ["like", "star"])
+      .gt("created_at", seenAt),
+    supabase
+      .from("matches")
+      .select("id", { count: "exact", head: true })
+      .or(`user_a.eq.${userId},user_b.eq.${userId}`)
+      .gt("created_at", seenAt),
+  ]);
+
+  return (likes.count ?? 0) + (matches.count ?? 0);
 }
 
 /** A single conversation by match id (for the chat header), scoped to the current user. */

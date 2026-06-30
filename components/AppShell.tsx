@@ -18,10 +18,12 @@ type Toast = {
 export function AppShell({
   children,
   unread,
+  notif,
   userId,
 }: {
   children: React.ReactNode;
   unread: number;
+  notif: number;
   userId: string;
 }) {
   const pathname = usePathname();
@@ -130,6 +132,7 @@ export function AppShell({
           if (row.target_id !== userId) return; // not aimed at me
           if (row.swiper_id === userId) return; // my own swipe
           if (row.direction !== "like" && row.direction !== "star") return;
+          refresh(); // bump the Activity badge
 
           // If this like completes a mutual match, the match toast (above) is the
           // more meaningful signal — don't also pop a "likes you" toast.
@@ -179,12 +182,12 @@ export function AppShell({
 
   return (
     <div className="relative flex h-full w-full">
-      <Sidebar unread={unread} />
+      <Sidebar unread={unread} notif={notif} />
       <div className="flex h-full min-w-0 flex-1 flex-col">
         <div className="relative flex flex-1 flex-col overflow-hidden">{children}</div>
         {!isChat && (
           <div className="lg:hidden">
-            <BottomNav unread={unread} />
+            <BottomNav unread={unread} notif={notif} />
           </div>
         )}
       </div>

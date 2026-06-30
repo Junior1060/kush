@@ -53,6 +53,15 @@ export interface Conversation {
   unread: number;
 }
 
+// A single entry in the Notifications feed: someone liked you, or you matched.
+export interface NotificationItem {
+  kind: "like" | "star" | "match";
+  profile: Profile; // the other person
+  createdAt: string;
+  matchId?: string; // present for matches → links straight to the chat
+  unseen: boolean; // created after your last visit to Notifications
+}
+
 export interface Filters {
   showMe: ShowMe;
   ageMin: number;

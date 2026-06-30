@@ -221,6 +221,22 @@ export async function markRead(matchId: string): Promise<void> {
   revalidatePath("/messages");
 }
 
+// Stamp "now" as the moment I last viewed Notifications, clearing the unseen
+// badge. Called when the Notifications screen mounts.
+export async function markNotificationsSeen(): Promise<void> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+
+  await supabase
+    .from("profiles")
+    .update({ notifications_seen_at: new Date().toISOString() })
+    .eq("id", user.id);
+  revalidatePath("/notifications");
+}
+
 export async function signOut(): Promise<void> {
   const supabase = await createClient();
   await supabase.auth.signOut();

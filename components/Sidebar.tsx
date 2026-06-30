@@ -7,6 +7,7 @@ import {
   DiscoverNavIcon,
   MatchesNavIcon,
   MessagesNavIcon,
+  NotificationsNavIcon,
   ProfileNavIcon,
 } from "./icons";
 
@@ -14,14 +15,15 @@ const ACTIVE = "#0A0A0A";
 const IDLE = "#6B6B6B";
 
 const TABS = [
-  { href: "/discover", label: "Discover", Icon: DiscoverNavIcon },
-  { href: "/matches", label: "Matches", Icon: MatchesNavIcon },
-  { href: "/messages", label: "Messages", Icon: MessagesNavIcon },
-  { href: "/profile", label: "Profile", Icon: ProfileNavIcon },
-];
+  { href: "/discover", label: "Discover", Icon: DiscoverNavIcon, badge: null },
+  { href: "/matches", label: "Matches", Icon: MatchesNavIcon, badge: null },
+  { href: "/messages", label: "Messages", Icon: MessagesNavIcon, badge: "messages" },
+  { href: "/notifications", label: "Activity", Icon: NotificationsNavIcon, badge: "notif" },
+  { href: "/profile", label: "Profile", Icon: ProfileNavIcon, badge: null },
+] as const;
 
 // Desktop-only left navigation rail.
-export function Sidebar({ unread = 0 }: { unread?: number }) {
+export function Sidebar({ unread = 0, notif = 0 }: { unread?: number; notif?: number }) {
   const pathname = usePathname();
 
   return (
@@ -30,8 +32,9 @@ export function Sidebar({ unread = 0 }: { unread?: number }) {
         <Wordmark size={26} star={22} />
       </div>
       <nav className="flex flex-col gap-1">
-        {TABS.map(({ href, label, Icon }) => {
+        {TABS.map(({ href, label, Icon, badge }) => {
           const active = pathname === href || pathname.startsWith(href + "/");
+          const count = badge === "messages" ? unread : badge === "notif" ? notif : 0;
           return (
             <Link
               key={href}
@@ -48,7 +51,7 @@ export function Sidebar({ unread = 0 }: { unread?: number }) {
                 <Icon size={22} />
               )}
               <span className="flex-1">{label}</span>
-              {label === "Messages" && unread > 0 && (
+              {count > 0 && (
                 <span
                   className="flex h-[20px] min-w-[20px] items-center justify-center rounded-full px-[6px] text-[11px] font-bold leading-none"
                   style={{
@@ -56,7 +59,7 @@ export function Sidebar({ unread = 0 }: { unread?: number }) {
                     color: active ? ACTIVE : "#FFFFFF",
                   }}
                 >
-                  {unread > 9 ? "9+" : unread}
+                  {count > 9 ? "9+" : count}
                 </span>
               )}
             </Link>
