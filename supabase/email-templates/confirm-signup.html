@@ -1,0 +1,31 @@
+<!--
+  Kush — "Confirm signup" email template.
+
+  Paste this into: Supabase Dashboard → Authentication → Emails → Templates → "Confirm signup".
+
+  WHY THIS FILE EXISTS / THE BUG IT FIXES
+  ---------------------------------------
+  The app (components/welcome/WelcomeAuth.tsx) verifies sign-ups with a 6-DIGIT CODE:
+
+      supabase.auth.verifyOtp({ email, token: code, type: "signup" })
+
+  That only works if the confirmation email actually contains the code. Supabase's
+  DEFAULT "Confirm signup" template ships with ONLY a magic link ({{ .ConfirmationURL }})
+  and NO code — so users received an email with a link but never a six-digit code, and
+  the verify screen had nothing to enter. The fix is to put {{ .Token }} in the template.
+
+  {{ .Token }} renders the 6-digit one-time code. Keep it.
+-->
+<h2 style="font-family: sans-serif; color: #1a1a1a;">Confirm your Kush account</h2>
+
+<p style="font-family: sans-serif; font-size: 15px; color: #444;">
+  Welcome to Kush — love that knows where it's from. Enter this code to confirm your email:
+</p>
+
+<p style="font-family: sans-serif; font-size: 32px; font-weight: 700; letter-spacing: 6px; color: #1a1a1a; margin: 24px 0;">
+  {{ .Token }}
+</p>
+
+<p style="font-family: sans-serif; font-size: 13px; color: #888;">
+  This code expires in 1 hour. If you didn't create a Kush account, you can ignore this email.
+</p>
