@@ -88,7 +88,10 @@ export function ChatThread({
           <div className="font-body text-[16px] font-bold text-ink">
             {profile.name}
           </div>
-          <div className="text-[12px] font-semibold text-green">Active now</div>
+          <div className="flex items-center gap-[5px] text-[12px] font-semibold text-[#2E7D54]">
+            <span className="h-[7px] w-[7px] rounded-full bg-[#2E7D54]" />
+            Active now
+          </div>
         </div>
       </div>
 
